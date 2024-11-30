@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+    <h1>Your Invoices</h1>
+<ul>
+    {{#each invoices}}
+        <li>Invoice Number: {{this.invoiceNumber}},
+            Created At:{{this.createdAt}},
+            User Email:{{this.userEmail}},
+            Items:{{this.items}},
+            Total Amount: {{this.totalAmount}}</li>
+    {{/each}}
+</ul>
+</body>
+</html>

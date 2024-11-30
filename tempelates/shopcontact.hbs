@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="/css/home.css">
+    <title>User Dashboard</title>
+</head>
+<body>
+    <div class="container">
+        <h1>Welcome, {{ownerName}}</h1>
+        <p>Your email: {{userEmail}}</p>
+    </div>
+    <div>
+        {{#if session.userEmail}}
+            <a href="/home?email={{session.userEmail}}" class="btn">Home</a>
+        {{else}}
+            <a href="/register" class="btn">Login to Edit Shop Details</a>
+        {{/if}}
+        <br>
+        {{#if session.userEmail}}
+            <a href="/shopabout?email={{session.userEmail}}" class="btn">About</a>
+        {{else}}
+            <a href="/register" class="btn">Login to Edit Shop Details</a>
+        {{/if}}
+        <br>
+        {{#if session.userEmail}}
+            <a href="/shopprofile?email={{session.userEmail}}" class="btn">Profile</a>
+        {{else}}
+            <a href="/register" class="btn">Login to Edit Shop Details</a>
+        {{/if}}
+        <br>
+        {{#if session.userEmail}}
+            <a href="/shopcontact?email={{session.userEmail}}" class="btn">Contact</a>
+        {{else}}
+            <a href="/register" class="btn">Login to Edit Shop Details</a>
+        {{/if}}
+        <br>
+        {{#if session.userEmail}}
+            <a href="/shoptrack?email={{session.userEmail}}" class="btn">Track</a>
+        {{else}}
+            <a href="/register" class="btn">Login to Edit Shop Details</a>
+        {{/if}}
+
+    </div>
+</body>
+</html>

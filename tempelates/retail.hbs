@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Retail Shop Signup</title>
+    <link rel="stylesheet" href="/css/retail.css">
+</head>
+
+<body>
+    <div class="container">
+        <form id="shopSignupForm" action="/retail" method="post">
+            <h1>Retail Shop Registration</h1>
+
+            <div class="form-group">
+                <label for="shopName">Shop Name</label>
+                <input type="text" id="shopName" name="shopName" required>
+            </div>
+
+            <div class="form-group">
+                <label for="ownerName">Owner Name</label>
+                <input type="text" id="ownerName" name="ownerName" required>
+            </div>
+
+            <div class="form-group">
+                <label for="contactNumber">Contact Number</label>
+                <input type="tel" id="contactNumber" name="contactNumber" required>
+            </div>
+
+            <div class="form-group">
+                <label for="email">Email </label>
+                <input type="email" id="email" name="email" value="{{email}}" readonly required>
+                </div>
+
+            <div class="form-group">
+                <label for="shopAddress">Shop Address</label>
+                <input type="text" id="shopAddress" name="shopAddress" required>
+            </div>
+
+            <div class="form-group">
+                <label for="shopType">Shop Type</label>
+                <select id="shopType" name="shopType" required>
+                    <option value="">Select Shop Type</option>
+                    <option value="clothing">Clothing</option>
+                    <option value="electronics">Electronics</option>
+                    <option value="grocery">Grocery</option>
+                    <option value="pharmacy">Pharmacy</option>
+                    <option value="other">Other</option>
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label for="registrationNumber">Business Registration Number</label>
+                <input type="text" id="registrationNumber" name="registrationNumber" required>
+            </div>
+
+            <div class="form-group">
+                <label for="taxId">Tax Identification Number</label>
+                <input type="text" id="taxId" name="taxId" required>
+            </div>
+
+            <div class="form-group">
+                <label for="operatingYears">Years in Business</label>
+                <input type="number" id="operatingYears" name="operatingYears" min="0" max="100" required>
+            </div>
+
+            <div class="form-group">
+                <label for="annualRevenue">Annual Revenue (Estimated)</label>
+                <input type="number" id="annualRevenue" name="annualRevenue" min="0" required>
+            </div>
+
+            <button type="submit">Complete Registration</button>
+        </form>
+    </div>
+
+    <script>
+        
+
+            
+
+            function validateForm() {
+                let isValid = true;
+
+                // Shop Name validation
+                const shopName = document.getElementById('shopName');
+                if (shopName.value.trim().length < 2) {
+                    setError(shopName, 'Shop name must be at least 2 characters long');
+                    isValid = false;
+                }
+
+                // Contact Number validation
+                const contactNumber = document.getElementById('contactNumber');
+                const phoneRegex = /^[+]?[(]?[0-9]{3}[)]?[-\s.]?[0-9]{3}[-\s.]?[0-9]{4,6}$/;
+                if (!phoneRegex.test(contactNumber.value)) {
+                    setError(contactNumber, 'Please enter a valid phone number');
+                    isValid = false;
+                }
+
+                // Email validation
+                const email = document.getElementById('email');
+                const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+                if (!emailRegex.test(email.value)) {
+                    setError(email, 'Please enter a valid email address');
+                    isValid = false;
+                }
+
+                // Registration Number validation
+                const registrationNumber = document.getElementById('registrationNumber');
+                if (registrationNumber.value.trim().length < 4) {
+                    setError(registrationNumber, 'Registration number must be at least 4 characters');
+                    isValid = false;
+                }
+
+                // Tax ID validation
+                const taxId = document.getElementById('taxId');
+                if (taxId.value.trim().length < 5) {
+                    setError(taxId, 'Tax ID must be at least 5 characters');
+                    isValid = false;
+                }
+
+                // Years in Business validation
+                const operatingYears = document.getElementById('operatingYears');
+                if (operatingYears.value < 0 || operatingYears.value > 100) {
+                    setError(operatingYears, 'Years in business must be between 0 and 100');
+                    isValid = false;
+                }
+
+                return isValid;
+            }
+
+            function setError(input, message) {
+                input.classList.add('error');
+                const errorDiv = document.createElement('div');
+                errorDiv.className = 'error-message';
+                errorDiv.innerText = message;
+                input.parentNode.insertBefore(errorDiv, input.nextSibling);
+            }
+
+            function clearErrors() {
+                const errorMessages = document.querySelectorAll('.error-message');
+                const errorInputs = document.querySelectorAll('.error');
+
+                errorMessages.forEach(error => error.remove());
+                errorInputs.forEach(input => input.classList.remove('error'));
+            }
+
+            
+        });
+    </script>
+</body>
+
+</html>
