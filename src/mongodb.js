@@ -95,8 +95,7 @@ const RetailSchema=new mongoose.Schema({
 const InvoiceSchema = new mongoose.Schema({
     invoiceNumber: {
         type: String,
-        required: true,
-        unique: true
+        required: true
     },
     userEmail: {
         type: String,
@@ -117,17 +116,25 @@ const InvoiceSchema = new mongoose.Schema({
     }
 });
 
-
+const stockSchema = new mongoose.Schema({
+    barcodeId: String,
+    description: String,
+    stockIn: Number,
+    stockOut: Number,
+    email: String // Reference to the shop owner
+});
 
 //defining the colection part
 const register=new mongoose.model("Register",LogInSchema)
 const contact=new mongoose.model("Contact_info",ContactSchema)
 const retail=new mongoose.model("Retail_info",RetailSchema)
 const Invoice = new mongoose.model("Invoice", InvoiceSchema);
+const Stock = mongoose.model("Stock", stockSchema);
 
 module.exports = {
    register,
     contact,
     retail,
-    Invoice
+    Invoice,
+    Stock
 };

@@ -18,21 +18,15 @@
         {{else}}
             <a href="/register" class="btn">Login to Edit Shop Details</a>
         {{/if}}
-
-       
         <a href="/logout" class="btn">Logout</a>
-
     </div>
-    <div>
+    
+    <div class="navigation">
         {{#if session.userEmail}}
             <a href="/home?email={{session.userEmail}}" class="btn">Home</a>
         {{else}}
             <a href="/register" class="btn">Login to Edit Shop Details</a>
         {{/if}}
-        <br>
-        <br>
-        <br>
-        <br>
         <br>
         {{#if session.userEmail}}
             <a href="/shopabout?email={{session.userEmail}}" class="btn">About</a>
@@ -40,19 +34,11 @@
             <a href="/register" class="btn">Login to Edit Shop Details</a>
         {{/if}}
         <br>
-        <br>
-        <br>
-        <br>
-        <br>
         {{#if session.userEmail}}
             <a href="/shopprofile?email={{session.userEmail}}" class="btn">Profile</a>
         {{else}}
             <a href="/register" class="btn">Login to Edit Shop Details</a>
         {{/if}}
-        <br>
-        <br>
-        <br>
-        <br>
         <br>
         {{#if session.userEmail}}
             <a href="/shopcontact?email={{session.userEmail}}" class="btn">Contact</a>
@@ -60,16 +46,11 @@
             <a href="/register" class="btn">Login to Edit Shop Details</a>
         {{/if}}
         <br>
-        <br>
-        <br>
-        <br>
-        <br>
         {{#if session.userEmail}}
             <a href="/shoptrack?email={{session.userEmail}}" class="btn">Track</a>
         {{else}}
             <a href="/register" class="btn">Login to Edit Shop Details</a>
         {{/if}}
-
     </div>
 </body>
 </html>

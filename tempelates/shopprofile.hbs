@@ -3,15 +3,38 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="/css/home.css">
+    <link rel="stylesheet" href="/css/shopprofile.css">
     <title>User Dashboard</title>
 </head>
 <body>
     <div class="container">
         <h1>Welcome, {{ownerName}}</h1>
         <p>Your email: {{userEmail}}</p>
+        
+        <!-- Stock Table -->
+        <h2>Stock Information</h2>
+        <table>
+            <thead>
+                <tr>
+                    <th>Barcode ID</th>
+                    <th>Product Name</th>
+                    <th>Total Stock</th>
+                    <th>Stock-Out</th>
+                </tr>
+            </thead>
+            <tbody>
+                {{#each stockItems}}
+                <tr>
+                    <td>{{this.barcodeId}}</td>
+                    <td>{{this.description}}</td>
+                    <td>{{this.stockIn}}</td>
+                    <td>{{this.stockOut}}</td>
+                </tr>
+                {{/each}}
+            </tbody>
+        </table>
     </div>
-    <div>
+    <div class="navigation">
         {{#if session.userEmail}}
             <a href="/home?email={{session.userEmail}}" class="btn">Home</a>
         {{else}}
@@ -41,7 +64,6 @@
         {{else}}
             <a href="/register" class="btn">Login to Edit Shop Details</a>
         {{/if}}
-
     </div>
 </body>
 </html>

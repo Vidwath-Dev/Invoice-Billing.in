@@ -3,7 +3,7 @@ const bcrypt = require("bcrypt"); // Import bcrypt
 const app = express();
 const path = require("path");
 const hbs = require("hbs");
-const { contact, register,retail ,Invoice} = require("./mongodb");
+const { contact, register,retail ,Invoice,Stock} = require("./mongodb");
 
 const tempelatePath = path.join(__dirname, '../tempelates');
 const publicPath = path.join(__dirname, '../public');
@@ -132,25 +132,67 @@ app.get("/shopcontact", async(req, res) => {
     res.render("shopcontact",{ownerName,userEmail});
 });
 
-app.get("/shopprofile", async(req, res) => {
-    const userEmail = req.query.email;
+app.get("/shopprofile", async (req, res) => {
+    const userEmail = req.query.email; // Get the user's email from the query parameters
     const shopDetails = await retail.findOne({ email: userEmail });
-    const ownerName = shopDetails.ownerName;
-    res.render("shopprofile",{ownerName,userEmail});
+    const stockItems = await Stock.find({ email: userEmail }); // Fetch stock items related to the shop
+
+    if (shopDetails) {
+        res.render("shopprofile", {
+            ownerName: shopDetails.ownerName,
+            userEmail: userEmail,
+            stockItems: stockItems // Pass stock items to the template
+        });
+    } else {
+        res.status(404).send("Shop not found");
+    }
 });
 
-app.get("/shoptrack",async (req, res) => {
+app.get("/shoptrack", async (req, res) => {
     const userEmail = req.query.email;
     const shopDetails = await retail.findOne({ email: userEmail });
-    const ownerName = shopDetails.ownerName;
-    res.render("shoptrack",{ownerName,userEmail});
+    
+    // Assuming you have a way to get stock items based on barcode
+    // You might need to adjust this according to your actual database structure
+    const stockItems = await Stock.find({ email: userEmail }); // Fetch stock items related to the shop
+
+    if (shopDetails) {
+        res.render("shoptrack", {
+            ownerName: shopDetails.ownerName,
+            userEmail: userEmail,
+            stockItems: stockItems // Pass stock items to the template
+        });
+    } else {
+        res.status(404).send("Shop not found");
+    }
 });
+
+
 
 app.get("/invoices", async (req, res) => {
     const userEmail = req.session.userEmail; // Get the user's email from the session
     const invoices = await Invoice.find({ userEmail });
+    const shopDetails = await retail.findOne({ email: userEmail });
+    const ownerName = shopDetails.ownerName;
+    // Get the invoice ID from the query parameters
+    const newInvoiceId = req.query.invoiceId;
 
-    res.render("invoices", { invoices });
+    // Pass the newInvoiceId and all invoices to the template
+    res.render("invoices", { invoices, newInvoiceId, shopDetails,ownerName}); 
+});
+
+app.get("/print-invoice", async (req, res) => {
+    const invoiceId = req.query.invoiceId; // Get the invoice ID from the query parameters
+    try {
+        const invoice = await Invoice.findById(invoiceId).populate('items'); // Fetch the invoice details
+        if (invoice) {
+            res.render("print-invoice", { invoice }); // Render a new template for printing
+        } else {
+            res.status(404).send("Invoice not found");
+        }
+    } catch (error) {
+        res.status(500).send("Error fetching invoice");
+    }
 });
 
 app.post("/contact", async (req, res) => {
@@ -249,19 +291,77 @@ app.post("/submit-invoice", async (req, res) => {
 
     // Parse items from the input
     const parsedItems = items.split('\n').map(item => {
-        const [description, quantity, price] = item.split(',');
-        return { description, quantity: Number(quantity), price: Number(price) };
-    });
+        const [barcodeId, description, quantity, price] = item.split(',');
+        const qty = Number(quantity);
+        const prc = Number(price);
 
+        // Validate quantity and price
+        if (isNaN(qty) || isNaN(prc) || qty <= 0 || prc < 0) {
+            console.error(`Invalid item entry: ${item}`);
+            return null; // Skip this item if invalid
+        }
+
+        return { barcodeId, description, quantity: qty, price: prc };
+    }).filter(item => item !== null); // Remove invalid items
+
+     // Check if each barcodeId exists in the Stock collection
+     const existingBarcodeIds = await Stock.find({ email: userEmail }).distinct('barcodeId');
+     const invalidItems = parsedItems.filter(item => !existingBarcodeIds.includes(item.barcodeId));
+ 
+     if (invalidItems.length > 0) {
+         // If there are any invalid items, return an error
+         const invalidBarcodes = invalidItems.map(item => item.barcodeId).join(', ');
+         return res.status(400).send(`The following barcode(s) are not in your stock: ${invalidBarcodes}. Please add them to stock.`);
+     }
+ 
+    // Calculate total amount
     const totalAmount = parsedItems.reduce((total, item) => total + (item.quantity * item.price), 0);
+
+
+    // Check if there are valid items
+    if (parsedItems.length === 0) {
+        return res.status(400).send("No valid items to process.");
+    }
 
     try {
         const newInvoice = new Invoice({ invoiceNumber, userEmail, items: parsedItems, totalAmount });
         await newInvoice.save();
-        res.redirect("/invoices"); // Redirect to the invoices page after saving
+
+        // Update stockout for each item
+        for (const item of parsedItems) {
+            const { barcodeId, quantity } = item;
+            await Stock.updateOne(
+                { barcodeId, email: userEmail }, // Find the stock item by barcodeId and userEmail
+                { $inc: { stockOut: quantity } } // Increment the stockOut by the quantity sold
+            );
+        }
+
+        // Redirect to the invoices page with the new invoice ID as a query parameter
+        res.redirect(`/invoices?invoiceId=${newInvoice._id.toHexString()}`); // Pass the ID in the query string
     } catch (error) {
-        console.error("Error creating invoice:", error.message); // Log the error message
+         console.error("Error creating invoice:", error.message); // Log the error message
         res.status(500).send("Error creating invoice");
+    }
+});
+
+app.post("/add-stock", async (req, res) => {
+    const { barcodeId,description, stockIn, stockOut } = req.body;
+    const userEmail = req.session.userEmail; // Get the user's email from the session
+
+    const stockData = new Stock({
+        barcodeId,
+        description,
+        stockIn,
+        stockOut,
+        email: userEmail // Associate stock with the shop
+    });
+
+    try {
+        await stockData.save(); // Save the stock data to the database
+        res.redirect(`/shoptrack?email=${encodeURIComponent(userEmail)}`); // Redirect back to shoptrack
+    } catch (error) {
+        console.error("Error saving stock data:", error.message);
+        res.status(500).send("Error saving stock data");
     }
 });
 

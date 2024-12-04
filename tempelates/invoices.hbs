@@ -1,20 +1,69 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
+    <link rel="stylesheet" href="/css/shoptrack.css">
+    <title>User Dashboard</title>
 </head>
+
 <body>
-    <h1>Your Invoices</h1>
-<ul>
-    {{#each invoices}}
-        <li>Invoice Number: {{this.invoiceNumber}},
-            Created At:{{this.createdAt}},
-            User Email:{{this.userEmail}},
-            Items:{{this.items}},
-            Total Amount: {{this.totalAmount}}</li>
-    {{/each}}
-</ul>
+    <div class="container">
+        <h1>Welcome, {{ownerName}}</h1>
+        <p>Your email: {{session.userEmail}}</p>
+    </div>
+
+    <div class="navigation">
+        {{#if session.userEmail}}
+        <a href="/home?email={{session.userEmail}}" class="btn">Home</a>
+        {{else}}
+        <a href="/register" class="btn">Login to Edit Shop Details</a>
+        {{/if}}
+        <br>
+        {{#if session.userEmail}}
+        <a href="/shopabout?email={{session.userEmail}}" class="btn">About</a>
+        {{else}}
+        <a href="/register" class="btn">Login to Edit Shop Details</a>
+        {{/if}}
+        <br>
+        {{#if session.userEmail}}
+        <a href="/shopprofile?email={{session.userEmail}}" class="btn">Profile</a>
+        {{else}}
+        <a href="/register" class="btn">Login to Edit Shop Details</a>
+        {{/if}}
+        <br>
+        {{#if session.userEmail}}
+        <a href="/shopcontact?email={{session.userEmail}}" class="btn">Contact</a>
+        {{else}}
+        <a href="/register" class="btn">Login to Edit Shop Details</a>
+        {{/if}}
+        <br>
+        {{#if session.userEmail}}
+        <a href="/shoptrack?email={{session.userEmail}}" class="btn">Track</a>
+        {{else}}
+        <a href="/register" class="btn">Login to Edit Shop Details</a>
+        {{/if}}
+    </div>
+    <div class="container">
+        <h1>Your Invoices</h1>
+        
+        <ul>
+            {{#each invoices}}
+                <li>
+                   <h2>Invoice ID: {{this._id}}</h2> <br> <!-- Display the ID for each invoice -->
+                    Barcode ID: {{this.invoiceNumber}} <br>
+                    Created At: {{this.createdAt}} <br>
+                    User Email: {{this.userEmail}} <br>
+                    Items: {{#each this.items}} {{this.description}} <br>
+                    Qty: {{this.quantity}} <br>
+                    Price: {{this.price}} {{/each}} <br>
+                    Total Amount: {{this.totalAmount}} <br>
+                    <a href="/print-invoice?invoiceId={{this._id}}" class="btn">Print</a>
+                </li>
+            {{/each}}
+        </ul>
+        <a href="/logout" class="btn">Logout</a>
+    </div>
 </body>
 </html>
