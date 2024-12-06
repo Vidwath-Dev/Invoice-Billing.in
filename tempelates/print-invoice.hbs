@@ -143,12 +143,23 @@
         <ul>
             {{#each invoice.items}}
             <li>
-                {{this.description}} - Quantity: {{this.quantity}} - Price: ${{this.price}}
+                {{this.description}} - Quantity: {{this.quantity}} - Price: {{this.price}}/-
             </li>
             {{/each}}
         </ul>
-        <h3>Total Amount: ${{invoice.totalAmount}}</h3>
-        <button onclick="window.print()" class="btn btn-print">Print Invoice</button> <!-- Button to trigger print -->
+        <h3>Total Amount: {{invoice.totalAmount}} Rs</h3>
+        <button id="printButton" class="btn btn-print">Print Invoice</button> <!-- Button to trigger print -->
+        <script>
+            document.getElementById('printButton').addEventListener('click', function () {
+                const confirmation = confirm("Are you sure you want to print this invoice?");
+                if (confirmation) {
+                    window.print(); // Proceed to print the invoice
+                } else {
+                    // Do nothing if the user cancels
+                    alert("Printing cancelled.");
+                }
+            });
+        </script>
     </div>
     <div style="text-align: center; margin-top: 20px;">
         <a href="/logout" class="btn">Logout</a>

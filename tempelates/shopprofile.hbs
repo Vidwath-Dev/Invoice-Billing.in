@@ -12,6 +12,17 @@
             <h1>Welcome, {{ownerName}}</h1>
             <p>Your email: {{userEmail}}</p>
             
+            <!-- Stock Alerts -->
+        {{#if alerts.length}}
+            <div class="alerts">
+                {{#each alerts}}
+                    <div class="alert {{this.level}}">
+                        {{this.message}}
+                    </div>
+                {{/each}}
+            </div>
+        {{/if}}
+        
             <!-- Stock Table -->
             <h2>Stock Information</h2>
             <table>

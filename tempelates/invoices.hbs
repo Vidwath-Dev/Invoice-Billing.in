@@ -180,14 +180,30 @@
         {{else}}
         <a href="/register" class="btn">Login to Edit Shop Details</a>
         {{/if}}
-
+        <br>
+        {{#if session.userEmail}}
         <a href="/shopabout?email={{session.userEmail}}" class="btn">About</a>
-
+        {{else}}
+        <a href="/register" class="btn">Login to Edit Shop Details</a>
+        {{/if}}
+        <br>
+        {{#if session.userEmail}}
         <a href="/shopprofile?email={{session.userEmail}}" class="btn">Profile</a>
-
+        {{else}}
+        <a href="/register" class="btn">Login to Edit Shop Details</a>
+        {{/if}}
+        <br>
+        {{#if session.userEmail}}
         <a href="/shopcontact?email={{session.userEmail}}" class="btn">Contact</a>
-
+        {{else}}
+        <a href="/register" class="btn">Login to Edit Shop Details</a>
+        {{/if}}
+        <br>
+        {{#if session.userEmail}}
         <a href="/shoptrack?email={{session.userEmail}}" class="btn">Track</a>
+        {{else}}
+        <a href="/register" class="btn">Login to Edit Shop Details</a>
+        {{/if}}
     </div>
 
     <div class="container">
@@ -196,17 +212,15 @@
         <ul>
             {{#each invoices}}
             <li>
-                <h2>Invoice ID: {{this._id}}</h2>
+                <h2>Invoice ID: {{this._id}}</h2> <!-- Display the ID for each invoice -->
                 <div class="invoice-details">
                     <b>Barcode ID:</b> {{this.invoiceNumber}} <br>
                     <b>Created At:</b> {{this.createdAt}} <br>
                     <b>User Email:</b> {{this.userEmail}} <br>
 
-                    <b>Items:</b> 
-                    {{#each this.items}}
-                    <br> - {{this.description}} (Qty: {{this.quantity}}, Price: {{this.price}})
-                    {{/each}} <br>
-
+                    <b>Items:</b> {{#each this.items}}{{this.description}} <br>
+                    <b>Qty:</b> {{this.quantity}} <br>
+                    <b>Price:</b> {{this.price}}{{/each}} <br>
                     <b>Total Amount:</b> {{this.totalAmount}} <br>
                     <a href="/print-invoice?invoiceId={{this._id}}" class="btn btn-print">Print</a>
                 </div>
