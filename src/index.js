@@ -138,29 +138,10 @@ app.get("/shopprofile", async (req, res) => {
     const stockItems = await Stock.find({ email: userEmail }); // Fetch stock items related to the shop
 
     if (shopDetails) {
-        // Check stock levels and prepare alert messages
-        const alerts = stockItems.map(item => {
-            const totalStock = item.stockIn;
-            const stockOut = item.stockOut;
-            const remainingStock = totalStock - stockOut;
-
-            if (remainingStock <= 0) {
-                return { message: `Stock for ${item.description} is depleted!`, level: 'critical' };
-            } else if (remainingStock <= totalStock * 0.05) {
-                return { message: `Warning: Only ${remainingStock} left for ${item.description}.`, level: 'warning' };
-            } else if (remainingStock <= totalStock * 0.1) {
-                return { message: `Alert: Stock for ${item.description} is below 10%.`, level: 'alert' };
-            } else if (remainingStock <= totalStock * 0.2) {
-                return { message: `Caution: Stock for ${item.description} is below 20%.`, level: 'caution' };
-            }
-            return null; // No alert
-        }).filter(alert => alert !== null); // Filter out null alerts
-
         res.render("shopprofile", {
             ownerName: shopDetails.ownerName,
             userEmail: userEmail,
-            stockItems: stockItems,// Pass stock items to the template
-            alerts: alerts // Pass alerts to the template
+            stockItems: stockItems // Pass stock items to the template
         });
     } else {
         res.status(404).send("Shop not found");
@@ -196,11 +177,6 @@ app.get("/invoices", async (req, res) => {
     // Get the invoice ID from the query parameters
     const newInvoiceId = req.query.invoiceId;
 
-    const { stockOut, stockIn } = req.body; // Assuming stockOut and stockIn are sent in the request
-
-    if (stockOut >= stockIn) {
-        return res.status(400).send("Invoice cannot be printed as stock is depleted.");
-    }
     // Pass the newInvoiceId and all invoices to the template
     res.render("invoices", { invoices, newInvoiceId, shopDetails,ownerName}); 
 });
@@ -320,34 +296,32 @@ app.post("/submit-invoice", async (req, res) => {
         const prc = Number(price);
 
         // Validate quantity and price
-        // if (isNaN(qty) || isNaN(prc) || qty <= 0 || prc < 0) {
-        //     console.error(`Invalid item entry: ${item}`);
-        //     return null; // Skip this item if invalid
-        // }
+        if (isNaN(qty) || isNaN(prc) || qty <= 0 || prc < 0) {
+            console.error(`Invalid item entry: ${item}`);
+            return null; // Skip this item if invalid
+        }
 
         return { barcodeId, description, quantity: qty, price: prc };
     }).filter(item => item !== null); // Remove invalid items
+
+     // Check if each barcodeId exists in the Stock collection
+     const existingBarcodeIds = await Stock.find({ email: userEmail }).distinct('barcodeId');
+     const invalidItems = parsedItems.filter(item => !existingBarcodeIds.includes(item.barcodeId));
+ 
+     if (invalidItems.length > 0) {
+         // If there are any invalid items, return an error
+         const invalidBarcodes = invalidItems.map(item => item.barcodeId).join(', ');
+         return res.status(400).send(`The following barcode(s) are not in your stock: ${invalidBarcodes}. Please add them to stock.`);
+     }
+ 
+    // Calculate total amount
+    const totalAmount = parsedItems.reduce((total, item) => total + (item.quantity * item.price), 0);
+
 
     // Check if there are valid items
     if (parsedItems.length === 0) {
         return res.status(400).send("No valid items to process.");
     }
-
-    // Check stock levels for each item
-    for (const item of parsedItems) {
-        const stockItem = await Stock.findOne({ barcodeId: item.barcodeId, email: userEmail });
-        if (stockItem) {
-            const remainingStock = stockItem.stockIn - stockItem.stockOut;
-            if (item.quantity > remainingStock) {
-                return res.status(400).send(`Insufficient stock for ${item.description}. Available: ${remainingStock}, Requested: ${item.quantity}`);
-            }
-        } else {
-            return res.status(400).send(`Item with barcode ${item.barcodeId} not found in stock.`);
-        }
-    }
-
-    // Calculate total amount
-    const totalAmount = parsedItems.reduce((total, item) => total + (item.quantity * item.price), 0);
 
     try {
         const newInvoice = new Invoice({ invoiceNumber, userEmail, items: parsedItems, totalAmount });
@@ -365,7 +339,7 @@ app.post("/submit-invoice", async (req, res) => {
         // Redirect to the invoices page with the new invoice ID as a query parameter
         res.redirect(`/invoices?invoiceId=${newInvoice._id.toHexString()}`); // Pass the ID in the query string
     } catch (error) {
-        console.error("Error creating invoice:", error.message); // Log the error message
+         console.error("Error creating invoice:", error.message); // Log the error message
         res.status(500).send("Error creating invoice");
     }
 });

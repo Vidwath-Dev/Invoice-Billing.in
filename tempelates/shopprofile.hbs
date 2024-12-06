@@ -7,74 +7,45 @@
     <title>User Dashboard</title>
 </head>
 <body>
-    <div class="container">
-        <h1>Welcome, {{ownerName}}</h1>
-        <p>Your email: {{userEmail}}</p>
-        
-        <!-- Stock Alerts -->
-        {{#if alerts.length}}
-            <div class="alerts">
-                {{#each alerts}}
-                    <div class="alert {{this.level}}">
-                        {{this.message}}
-                    </div>
-                {{/each}}
-            </div>
-        {{/if}}
-
-        <!-- Stock Table -->
-        <h2>Stock Information</h2>
-        <table>
-            <thead>
-                <tr>
-                    <th>Barcode ID</th>
-                    <th>Product Name</th>
-                    <th>Total Stock</th>
-                    <th>Stock-Out</th>
-                </tr>
-            </thead>
-            <tbody>
-                {{#each stockItems}}
-                <tr>
-                    <td>{{this.barcodeId}}</td>
-                    <td>{{this.description}}</td>
-                    <td>{{this.stockIn}}</td>
-                    <td>{{this.stockOut}}</td>
-                </tr>
-                {{/each}}
-            </tbody>
-        </table>
-    </div>
-    <div class="navigation">
-        {{#if session.userEmail}}
-            <a href="/home?email={{session.userEmail}}" class="btn">Home</a>
-        {{else}}
-            <a href="/register" class="btn">Login to Edit Shop Details</a>
-        {{/if}}
-        <br>
-        {{#if session.userEmail}}
+    <div class="main-background">
+        <div class="container">
+            <h1>Welcome, {{ownerName}}</h1>
+            <p>Your email: {{userEmail}}</p>
+            
+            <!-- Stock Table -->
+            <h2>Stock Information</h2>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Barcode ID</th>
+                        <th>Product Name</th>
+                        <th>Total Stock</th>
+                        <th>Stock-Out</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {{#each stockItems}}
+                    <tr>
+                        <td>{{this.barcodeId}}</td>
+                        <td>{{this.description}}</td>
+                        <td>{{this.stockIn}}</td>
+                        <td>{{this.stockOut}}</td>
+                    </tr>
+                    {{/each}}
+                </tbody>
+            </table>
+        </div>
+        <div class="navigation">
+            {{#if session.userEmail}}
+                <a href="/home?email={{session.userEmail}}" class="btn">Home</a>
+            {{else}}
+                <a href="/register" class="btn">Login to Edit Shop Details</a>
+            {{/if}}
             <a href="/shopabout?email={{session.userEmail}}" class="btn">About</a>
-        {{else}}
-            <a href="/register" class="btn">Login to Edit Shop Details</a>
-        {{/if}}
-        <br>
-        {{#if session.userEmail}}
             <a href="/shopprofile?email={{session.userEmail}}" class="btn">Profile</a>
-        {{else}}
-            <a href="/register" class="btn">Login to Edit Shop Details</a>
-        {{/if}}
-        <br>
-        {{#if session.userEmail}}
             <a href="/shopcontact?email={{session.userEmail}}" class="btn">Contact</a>
-        {{else}}
-            <a href="/register" class="btn">Login to Edit Shop Details</a>
-        {{/if}}
-        <br>
-        {{#if session.userEmail}}
             <a href="/shoptrack?email={{session.userEmail}}" class="btn">Track</a>
-        {{else}}
-            <a href="/register" class="btn">Login to Edit Shop Details</a>
-        {{/if}}
+        </div>
     </div>
 </body>
 </html>
