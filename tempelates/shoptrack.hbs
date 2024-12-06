@@ -9,76 +9,76 @@
 </head>
 
 <body>
-    <div class="main-background">
-        <div class="container">
-            <h1>Welcome, {{ownerName}}</h1>
-            <p>Your email: {{userEmail}}</p>
-        </div>
-
-        <div class="navigation">
-            {{#if session.userEmail}}
-            <a href="/home?email={{session.userEmail}}" class="btn">Home</a>
-            {{else}}
-            <a href="/register" class="btn">Login to Edit Shop Details</a>
-            {{/if}}
-            <br>
-            {{#if session.userEmail}}
-            <a href="/shopabout?email={{session.userEmail}}" class="btn">About</a>
-            {{else}}
-            <a href="/register" class="btn">Login to Edit Shop Details</a>
-            {{/if}}
-            <br>
-            {{#if session.userEmail}}
-            <a href="/shopprofile?email={{session.userEmail}}" class="btn">Profile</a>
-            {{else}}
-            <a href="/register" class="btn">Login to Edit Shop Details</a>
-            {{/if}}
-            <br>
-            {{#if session.userEmail}}
-            <a href="/shopcontact?email={{session.userEmail}}" class="btn">Contact</a>
-            {{else}}
-            <a href="/register" class="btn">Login to Edit Shop Details</a>
-            {{/if}}
-            <br>
-            {{#if session.userEmail}}
-            <a href="/shoptrack?email={{session.userEmail}}" class="btn">Track</a>
-            {{else}}
-            <a href="/register" class="btn">Login to Edit Shop Details</a>
-            {{/if}}
-        </div>
-
-        <div class="invoice-form">
-            <form action="/submit-invoice" method="POST">
-                <label for="invoiceNumber">Barcode ID:</label>
-                <input type="text" id="invoiceNumber" name="invoiceNumber" required>
-
-                <label for="items">Enter the Items (Barcode_ID ,Product_Name, Quantity, Price):</label>
-                <textarea id="items" name="items" required></textarea>
-
-                <button type="submit">Create Invoice</button>
-                {{#if session.userEmail}}
-                <a href="/invoices?email={{session.userEmail}}" class="btn">View Invoices</a>
-                {{/if}}
-
-            </form>
-
-            <form action="/add-stock" method="POST">
-                <label for="barcodeId">Enter Barcode ID:</label>
-                <input type="text" id="barcodeId" name="barcodeId" required>
-
-                <label for="description">Enter Product name:</label>
-                <input type="text" id="description" name="description" required>
-
-                <label for="stockIn">Stock-In:</label>
-                <input type="number" id="stockIn" name="stockIn" required>
-
-                <label for="stockOut">Stock-Out:</label>
-                <input type="number" id="stockOut" name="stockOut" required>
-
-                <button type="submit">Add Stock</button>
-            </form>
-        </div>
+    <div class="container">
+        <h1>Welcome, {{ownerName}}</h1>
+        <p>Your email: {{userEmail}}</p>
     </div>
+
+    <div class="navigation">
+        {{#if session.userEmail}}
+        <a href="/home?email={{session.userEmail}}" class="btn">Home</a>
+        {{else}}
+        <a href="/register" class="btn">Login to Edit Shop Details</a>
+        {{/if}}
+        <br>
+        {{#if session.userEmail}}
+        <a href="/shopabout?email={{session.userEmail}}" class="btn">About</a>
+        {{else}}
+        <a href="/register" class="btn">Login to Edit Shop Details</a>
+        {{/if}}
+        <br>
+        {{#if session.userEmail}}
+        <a href="/shopprofile?email={{session.userEmail}}" class="btn">Profile</a>
+        {{else}}
+        <a href="/register" class="btn">Login to Edit Shop Details</a>
+        {{/if}}
+        <br>
+        {{#if session.userEmail}}
+        <a href="/shopcontact?email={{session.userEmail}}" class="btn">Contact</a>
+        {{else}}
+        <a href="/register" class="btn">Login to Edit Shop Details</a>
+        {{/if}}
+        <br>
+        {{#if session.userEmail}}
+        <a href="/shoptrack?email={{session.userEmail}}" class="btn">Track</a>
+        {{else}}
+        <a href="/register" class="btn">Login to Edit Shop Details</a>
+        {{/if}}
+    </div>
+
+    <div class="invoice-form">
+        <form action="/submit-invoice" method="POST">
+            <label for="invoiceNumber">Barcode ID:</label>
+            <textarea type="text" id="invoiceNumber" name="invoiceNumber" required></textarea>
+
+            <label for="items">Enter the Items (Barcode_ID ,Product_Name, Quantity, Price):</label>
+            <textarea id="items" name="items" required></textarea>
+
+            <button >Create Invoice</button>
+            {{#if session.userEmail}}
+            <a href="/invoices?email={{session.userEmail}}" class="btn">View Invoices</a>
+            {{/if}}
+
+        </form>
+
+        <form action="/add-stock" method="POST">
+            <label for="barcodeId">Enter Barcode ID:</label>
+            <input type="text" id="barcodeId" name="barcodeId" required>
+
+            <label for="description">Enter Product name:</label>
+            <input type="text" id="description" name="description" required>
+
+            <label for="stockIn">Stock-In:</label>
+            <input type="number" id="stockIn" name="stockIn" required>
+
+            <label for="stockOut">Stock-Out:</label>
+            <input type="number" id="stockOut" name="stockOut" required>
+
+            <button type="submit">Add Stock</button>
+        </form>
+    </div>
+
+
 </body>
 
 </html>
