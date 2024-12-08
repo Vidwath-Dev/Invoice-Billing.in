@@ -82,11 +82,11 @@ p {
 
 /* Navigation */
 .navigation {
-    max-width: 600px;
+    max-width: 800px;
     width: 90%;
     margin: 20px auto;
     padding: 15px;
-    background: linear-gradient(145deg, #ffffff, #f1f1f1);
+    background: linear-gradient(145deg, #ffffff, #f0f0f0);
     border-radius: 15px;
     box-shadow: 10px 10px 20px rgba(0, 0, 0, 0.2), -10px -10px 20px rgba(255, 255, 255, 0.7);
     text-align: center;
@@ -94,22 +94,24 @@ p {
 
 .navigation a {
     display: inline-block;
-    margin: 10px;
-    padding: 10px 15px;
+    text-align: center;
+    padding: 12px 18px;
+    margin: 10px 5px;
     font-size: 1rem;
-    color: #007bff;
-    border-radius: 20px;
+    color: #fff;
+    background: linear-gradient(145deg, #007bff, #0056b3);
     text-decoration: none;
+    border-radius: 25px;
+    box-shadow: 3px 3px 8px rgba(0, 0, 0, 0.2), -3px -3px 8px rgba(255, 255, 255, 0.3);
     transition: all 0.3s ease;
-    background: linear-gradient(145deg, #e0e0e0, #ffffff);
-    box-shadow: 3px 3px 10px rgba(0, 0, 0, 0.1), -3px -3px 10px rgba(255, 255, 255, 0.8);
 }
 
 .navigation a:hover {
-    background: #007bff;
-    color: #fff;
-    box-shadow: 3px 3px 15px rgba(0, 0, 0, 0.2), -3px -3px 15px rgba(255, 255, 255, 0.4);
+    transform: scale(1.05);
+    background: linear-gradient(145deg, #0056b3, #003f82);
+    box-shadow: 3px 3px 15px rgba(0, 0, 0, 0.3), -3px -3px 15px rgba(255, 255, 255, 0.4);
 }
+
 
 /* Responsive Design */
 @media (max-width: 768px) {

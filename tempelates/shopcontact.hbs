@@ -1,11 +1,13 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="/css/shopcontact.css">
     <title>User Dashboard</title>
 </head>
+
 <body>
     <div class="main-background">
         <div class="container">
@@ -15,16 +17,72 @@
 
         <div class="navigation">
             {{#if session.userEmail}}
-                <a href="/home?email={{session.userEmail}}" class="btn">Home</a>
+            <a href="/home?email={{session.userEmail}}" class="btn">Home</a>
             {{else}}
-                <a href="/register" class="btn">Login to Edit Shop Details</a>
+            <a href="/register" class="btn">Login to Edit Shop Details</a>
             {{/if}}
 
             <a href="/shopabout?email={{session.userEmail}}" class="btn">About</a>
-            <a href="/shopprofile?email={{session.userEmail}}" class="btn">Profile</a>
             <a href="/shopcontact?email={{session.userEmail}}" class="btn">Contact</a>
+            <a href="/shopprofile?email={{session.userEmail}}" class="btn">Profile</a>
             <a href="/shoptrack?email={{session.userEmail}}" class="btn">Track</a>
         </div>
+        <div class="contact-form">
+            <h1>Contact Us</h1>
+            <form id="contactForm" action="/shopcontact" method="post" >
+                <label for="name">Name:</label>
+                <input type="text" id="name" name="name" required>
+
+                <label for="email">Email:</label>
+                <input type="email" id="email" name="email" required>
+
+                <label for="message">Message:</label>
+                <textarea id="message" name="message" required></textarea>
+
+                <button type="submit">Submit</button>
+            </form>
+            <p id="responseMessage"></p>
+        </div>
+
+        <script>
+            const burger = document.querySelector('.burger');
+            const navLinks = document.querySelector('.nav-links');
+
+            burger.addEventListener('click', () => {
+                navLinks.classList.toggle('active');
+            });
+            document.getElementById('contactForm').addEventListener('submit', function (e) {
+                e.preventDefault();
+
+                const name = document.getElementById('name').value;
+                const email = document.getElementById('email').value;
+                const message = document.getElementById('message').value;
+
+                // Send the form data to the server
+                fetch('http://localhost:3000/submit-contact', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ name, email, message })
+                })
+                    .then(response => response.json())
+                    .then(data => {
+                        document.getElementById('responseMessage').textContent = data.message;
+                        if (data.success) {
+                            document.getElementById('responseMessage').style.color = 'green';
+                        } else {
+                            document.getElementById('responseMessage').style.color = 'red';
+                        }
+                    })
+                    .catch(error => {
+                        document.getElementById('responseMessage').textContent = 'Error submitting your message.';
+                        document.getElementById('responseMessage').style.color = 'red';
+                    });
+            });
+
+        </script>
     </div>
 </body>
+
 </html>

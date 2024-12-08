@@ -188,13 +188,13 @@
         {{/if}}
         <br>
         {{#if session.userEmail}}
-        <a href="/shopprofile?email={{session.userEmail}}" class="btn">Profile</a>
+        <a href="/shopcontact?email={{session.userEmail}}" class="btn">Contact</a>
         {{else}}
         <a href="/register" class="btn">Login to Edit Shop Details</a>
         {{/if}}
         <br>
         {{#if session.userEmail}}
-        <a href="/shopcontact?email={{session.userEmail}}" class="btn">Contact</a>
+        <a href="/shopprofile?email={{session.userEmail}}" class="btn">Profile</a>
         {{else}}
         <a href="/register" class="btn">Login to Edit Shop Details</a>
         {{/if}}

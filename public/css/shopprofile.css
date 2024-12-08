@@ -119,6 +119,17 @@ tbody tr:hover {
     text-align: center;
 }
 
+/* Sidebyside Layout */
+.sidebyside {
+    display: flex;
+    justify-content: center;
+    align-items: flex-start;
+    gap: 20px;
+    width: 100%;
+    max-width: 1200px;
+    margin: 20px auto;
+}
+
 /* Responsive Design */
 @media (max-width: 768px) {
     h1 {
@@ -152,4 +163,41 @@ tbody tr:hover {
         padding: 8px 12px;
         font-size: 0.8rem;
     }
+}
+
+/* Graph Container */
+.graph-container {
+    max-width: 800px;
+    width: 100%;
+    margin: 20px auto;
+    padding: 20px;
+    background: linear-gradient(145deg, #ffffff, #f0f0f0);
+    border-radius: 15px;
+    box-shadow: 10px 10px 20px rgba(0, 0, 0, 0.2), -10px -10px 20px rgba(255, 255, 255, 0.7);
+    text-align: center;
+}
+
+/* Canvas Styling */
+#stockChart {
+    border-radius: 10px;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+    background: #ffffff; /* Optional: Add a background color */
+    transition: transform 0.3s ease;
+}
+
+#stockChart:hover {
+    transform: scale(1.02); /* Slightly scale up on hover */
+}
+
+.alert {
+    
+    text-align: center; /* Center the text */
+    overflow: hidden; /* Hide overflow if needed */
+    height: 30px; /* Set a height for the alert */
+    position: relative; /* Position relative for better control */
+}
+
+marquee {
+    display: block; /* Make marquee a block element */
+    margin: 0 auto; /* Center the marquee */
 }

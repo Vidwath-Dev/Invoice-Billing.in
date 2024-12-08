@@ -95,3 +95,8 @@ button:hover {
 .container button:hover {
     background-color: #218838;
 }
+
+.side{
+    display: flex;
+    margin-top: 20px;
+}

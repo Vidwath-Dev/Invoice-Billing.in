@@ -3,7 +3,8 @@ const bcrypt = require("bcrypt"); // Import bcrypt
 const app = express();
 const path = require("path");
 const hbs = require("hbs");
-const { contact, register,retail ,Invoice,Stock} = require("./mongodb");
+const nodemailer = require('nodemailer'); // Make sure to install nodemailer
+const { contact, register, retail, Invoice, Stock, Shopcontact } = require("./mongodb");
 
 const tempelatePath = path.join(__dirname, '../tempelates');
 const publicPath = path.join(__dirname, '../public');
@@ -14,7 +15,7 @@ const session = require("express-session");
 
 // Session middleware
 app.use(session({
-    secret: 'Muddu', // Change this to a secure random string
+    secret: '', // Change this to a secure random string
     resave: false,
     saveUninitialized: true,
     cookie: { secure: false } // Set to true if using HTTPS
@@ -45,6 +46,12 @@ app.use(express.urlencoded({ extended: false }));
 // Register the eq helper
 hbs.registerHelper('eq', function (a, b) {
     return a === b;
+});
+
+// Register a JSON helper
+// In index.js
+hbs.registerHelper('json', function (context) {
+    return JSON.stringify(context);
 });
 
 app.get("/", (req, res) => {
@@ -78,7 +85,7 @@ app.get("/home", async (req, res) => {
 
     if (user && shopDetails) {
         res.render("home", {
-            ownerName:shopDetails.ownerName,
+            ownerName: shopDetails.ownerName,
             userEmail: user.email,
             shopName: shopDetails.shopName,
             shopAddress: shopDetails.shopAddress,
@@ -91,10 +98,10 @@ app.get("/home", async (req, res) => {
 
 app.get("/edit-shop", async (req, res) => {
     const userEmail = req.query.email;
-    
-    
+
+
     const shopDetails = await retail.findOne({ email: userEmail });
-    
+
 
     if (shopDetails) {
         res.render("edit-shop", { shopDetails });
@@ -117,25 +124,38 @@ app.get("/logout", (req, res) => {
     }
 });
 
-app.get("/shopabout", async(req, res) => {
+app.get("/shopabout", async (req, res) => {
 
     const userEmail = req.query.email;
     const shopDetails = await retail.findOne({ email: userEmail });
     const ownerName = shopDetails.ownerName;
-    res.render("shopabout",{ownerName,userEmail});
+    res.render("shopabout", { ownerName, userEmail });
 });
 
-app.get("/shopcontact", async(req, res) => {
+app.get("/shopcontact", async (req, res) => {
     const userEmail = req.query.email;
     const shopDetails = await retail.findOne({ email: userEmail });
+
+    // Check if shopDetails is found
+    if (!shopDetails) {
+        return res.status(404).send("Shop not found"); // or render an error page
+    }
+
     const ownerName = shopDetails.ownerName;
-    res.render("shopcontact",{ownerName,userEmail});
+    res.render("shopcontact", { ownerName, userEmail });
 });
 
 app.get("/shopprofile", async (req, res) => {
-    const userEmail = req.query.email; // Get the user's email from the query parameters
+    const userEmail = req.query.email;
     const shopDetails = await retail.findOne({ email: userEmail });
-    const stockItems = await Stock.find({ email: userEmail }); // Fetch stock items related to the shop
+    const stockItems = await Stock.find({ email: userEmail });
+
+    // Ensure data is properly transformed
+    const stockInData = stockItems.map(item => item.stockIn || 0);
+    const stockOutData = stockItems.map(item => item.stockOut || 0);
+    const labels = stockItems.map(item => item.description || 'Unknown');
+
+
 
     if (shopDetails) {
         // Check stock levels and prepare alert messages
@@ -159,8 +179,11 @@ app.get("/shopprofile", async (req, res) => {
         res.render("shopprofile", {
             ownerName: shopDetails.ownerName,
             userEmail: userEmail,
-            stockItems: stockItems,// Pass stock items to the template
-            alerts: alerts // Pass alerts to the template
+            stockItems: stockItems,
+            alerts: alerts,
+            stockInData: stockInData,
+            stockOutData: stockOutData,
+            labels: labels
         });
     } else {
         res.status(404).send("Shop not found");
@@ -170,7 +193,7 @@ app.get("/shopprofile", async (req, res) => {
 app.get("/shoptrack", async (req, res) => {
     const userEmail = req.query.email;
     const shopDetails = await retail.findOne({ email: userEmail });
-    
+
     // Assuming you have a way to get stock items based on barcode
     // You might need to adjust this according to your actual database structure
     const stockItems = await Stock.find({ email: userEmail }); // Fetch stock items related to the shop
@@ -202,7 +225,7 @@ app.get("/invoices", async (req, res) => {
         return res.status(400).send("Invoice cannot be printed as stock is depleted.");
     }
     // Pass the newInvoiceId and all invoices to the template
-    res.render("invoices", { invoices, newInvoiceId, shopDetails,ownerName}); 
+    res.render("invoices", { invoices, newInvoiceId, shopDetails, ownerName });
 });
 
 app.get("/print-invoice", async (req, res) => {
@@ -216,6 +239,35 @@ app.get("/print-invoice", async (req, res) => {
         }
     } catch (error) {
         res.status(500).send("Error fetching invoice");
+    }
+});
+
+// barcode scanner
+// Add this route to your existing index.js file
+// Add this route to your existing index.js file
+app.get("/get-product-details", async (req, res) => {
+    const barcode = req.query.barcode;
+    const userEmail = req.session.userEmail;
+
+    try {
+        // Find the stock item by barcode and email
+        const stockItem = await Stock.findOne({ 
+            barcodeId: barcode, 
+            email: userEmail 
+        });
+
+        if (stockItem) {
+            res.json({
+                description: stockItem.description,
+                price: stockItem.price || 0, // Add a price field to your Stock schema if not already present
+                remainingStock: stockItem.stockIn - stockItem.stockOut
+            });
+        } else {
+            res.status(404).json({ message: "Product not found" });
+        }
+    } catch (error) {
+        console.error("Error fetching product details:", error);
+        res.status(500).json({ message: "Error fetching product details" });
     }
 });
 
@@ -235,6 +287,23 @@ app.post("/contact", async (req, res) => {
     }
 });
 
+app.post("/shopcontact", async (req, res) => {
+    // console.log(req.body); // Log the request body
+    const data = {
+        name: req.body.name,
+        email: req.body.email,
+        message: req.body.message
+    };
+
+    try {
+        await Shopcontact.insertMany([data]);
+        res.send("Data submitted");
+    } catch (error) {
+        // console.error("Error inserting data:", error); // Log the error
+        res.status(500).send("Error submitting data");
+    }
+});
+
 app.post("/signup", async (req, res) => {
     const data = {
         name: req.body.name,
@@ -250,8 +319,8 @@ app.post("/signup", async (req, res) => {
 
     try {
         // Check if the email already exists in the database
-        const existingUser  = await register.findOne({ email: data.email });
-        if (existingUser ) {
+        const existingUser = await register.findOne({ email: data.email });
+        if (existingUser) {
             return res.status(400).send("Email already exists");
         }
 
@@ -303,7 +372,7 @@ app.post("/retail", async (req, res) => {
     try {
         await retail.insertMany([data]);
         res.render("register");
-    }  catch (error) {
+    } catch (error) {
         console.error("Error inserting retail data:", error.message, error.stack);
         res.status(500).send("Error submitting data");
     }
@@ -371,23 +440,75 @@ app.post("/submit-invoice", async (req, res) => {
 });
 
 app.post("/add-stock", async (req, res) => {
-    const { barcodeId,description, stockIn, stockOut } = req.body;
+    const { barcodeId, description, stockIn, stockOut } = req.body;
     const userEmail = req.session.userEmail; // Get the user's email from the session
 
-    const stockData = new Stock({
-        barcodeId,
-        description,
-        stockIn,
-        stockOut,
-        email: userEmail // Associate stock with the shop
-    });
+    // Convert stockIn and stockOut to numbers
+    const stockInValue = Number(stockIn);
+    const stockOutValue = Number(stockOut);
 
     try {
-        await stockData.save(); // Save the stock data to the database
+        // Check if the stock item already exists
+        const existingStock = await Stock.findOne({ barcodeId, email: userEmail });
+
+        if (existingStock) {
+            // If it exists, update the stockIn and stockOut values
+            existingStock.stockIn += stockInValue; // Increment stockIn
+            // existingStock.stockOut += stockOutValue; // Increment stockOut
+            await existingStock.save(); // Save the updated stock item
+        } else {
+            // If it doesn't exist, create a new stock item
+            const stockData = new Stock({
+                barcodeId,
+                description,
+                stockIn: stockInValue, // Set stockIn
+                stockOut: stockOutValue, // Set stockOut
+                email: userEmail // Associate stock with the shop
+            });
+            await stockData.save(); // Save the new stock data to the database
+        }
+
         res.redirect(`/shoptrack?email=${encodeURIComponent(userEmail)}`); // Redirect back to shoptrack
     } catch (error) {
         console.error("Error saving stock data:", error.message);
         res.status(500).send("Error saving stock data");
+    }
+});
+
+app.post('/send-invoice', async (req, res) => {
+    const { email, invoiceId } = req.body;
+
+    try {
+        // Fetch the invoice details from the database
+        const invoice = await Invoice.findById(invoiceId).populate('items');
+
+        if (!invoice) {
+            return res.status(404).send('Invoice not found');
+        }
+
+        // Set up nodemailer transporter
+        const transporter = nodemailer.createTransport({
+            service: 'gmail', // Use your email service
+            auth: {
+                user: ' Your email', // Your email
+                pass: 'Your email password', // Your email password
+            },
+        });
+
+        // Email options
+        const mailOptions = {
+            from: 'Your email',
+            to: email,
+            subject: `Invoice #${invoice.invoiceNumber}`,
+            text: `Here is your invoice:\n\n${JSON.stringify(invoice, null, 2)}`, // Customize the email content as needed
+        };
+
+        // Send email
+        await transporter.sendMail(mailOptions);
+        res.status(200).send('Invoice sent successfully');
+    } catch (error) {
+        console.error('Error sending email:', error);
+        res.status(500).send('Error sending invoice');
     }
 });
 

@@ -1,93 +1,93 @@
-const mongoose=require("mongoose")
+const mongoose = require("mongoose")
 
 //mogodb connection
 mongoose.connect("mongodb://localhost:27017/Mini_Project")                      //command is used to connect node to mongodb database
-.then(()=>{
-    console.log("mongodb connected");
-})
-.catch(()=>{
-    console.log("failed to connect");
-})
+    .then(() => {
+        console.log("mongodb connected");
+    })
+    .catch(() => {
+        console.log("failed to connect");
+    })
 
 //contact schema
-const ContactSchema=new mongoose.Schema({
-    name:{
-        type:String,
-        required:true
+const ContactSchema = new mongoose.Schema({
+    name: {
+        type: String,
+        required: true
     },
-    email:{
-        type:String,
-        required:true
+    email: {
+        type: String,
+        required: true
     },
-    subject:{
-        type:String,
-        required:true
+    subject: {
+        type: String,
+        required: true
     },
-    message:{
-        type:String,
-        required:true
+    message: {
+        type: String,
+        required: true
     }
 })
 
 //defining schema for documents(i.e formate of the documents)
-const LogInSchema=new mongoose.Schema({
-    name:{
-        type:String,
-        required:true
+const LogInSchema = new mongoose.Schema({
+    name: {
+        type: String,
+        required: true
     },
-    email:{
-        type:String,
-        required:true,
+    email: {
+        type: String,
+        required: true,
         unique: true
     },
-    password:{
-        type:String,
-        required:true
+    password: {
+        type: String,
+        required: true
     }
 })
 
 //retail shop details
-const RetailSchema=new mongoose.Schema({
-    shopName:{
-        type:String,
-        required:true
+const RetailSchema = new mongoose.Schema({
+    shopName: {
+        type: String,
+        required: true
     },
-    ownerName:{
-        type:String,
-        required:true
+    ownerName: {
+        type: String,
+        required: true
     },
-    contactNumber:{
-        type:Number,
-        required:true
+    contactNumber: {
+        type: Number,
+        required: true
     },
-    email:{
-        type:String,
-        required:true,
+    email: {
+        type: String,
+        required: true,
         unique: true
     },
-    shopAddress:{
-        type:String,
-        required:true
+    shopAddress: {
+        type: String,
+        required: true
     },
-    shopType:{
-        type:String,
-        required:true
+    shopType: {
+        type: String,
+        required: true
     },
-    registrationNumber:{
-        type:String,
-        required:true
+    registrationNumber: {
+        type: String,
+        required: true
     },
-    taxId:{
-        type:String,
-        required:true
+    taxId: {
+        type: String,
+        required: true
     },
-    operatingYears:{
-        type:Number,
-        required:true
+    operatingYears: {
+        type: Number,
+        required: true
     },
-    annualRevenue:{
-        type:Number,
-        required:true
+    annualRevenue: {
+        type: Number,
+        required: true
     },
 })
 
@@ -106,10 +106,10 @@ const InvoiceSchema = new mongoose.Schema({
         quantity: Number,
         price: Number
     }],
-     totalAmount: {
-         type: Number,
-         required: true
-     },
+    totalAmount: {
+        type: Number,
+        required: true
+    },
     createdAt: {
         type: Date,
         default: Date.now
@@ -121,20 +121,32 @@ const stockSchema = new mongoose.Schema({
     description: String,
     stockIn: Number,
     stockOut: Number,
-    email: String // Reference to the shop owner
+    email: String,// Reference to the shop owner
+    price: Number
+});
+
+
+// MongoDB Schema and Model for shopContact Form Data
+const shopcontactSchema = new mongoose.Schema({
+    name: String,
+    email: String,
+    message: String,
+    date: { type: Date, default: Date.now }
 });
 
 //defining the colection part
-const register=new mongoose.model("Register",LogInSchema)
-const contact=new mongoose.model("Contact_info",ContactSchema)
-const retail=new mongoose.model("Retail_info",RetailSchema)
+const register = new mongoose.model("Register", LogInSchema)
+const contact = new mongoose.model("Contact_info", ContactSchema)
+const retail = new mongoose.model("Retail_info", RetailSchema)
 const Invoice = new mongoose.model("Invoice", InvoiceSchema);
 const Stock = mongoose.model("Stock", stockSchema);
+const Shopcontact =new mongoose.model("shopcontact_info", shopcontactSchema);
 
 module.exports = {
-   register,
+    register,
     contact,
     retail,
     Invoice,
-    Stock
+    Stock,
+    Shopcontact
 };
