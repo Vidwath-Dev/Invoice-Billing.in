@@ -4,7 +4,8 @@ const app = express();
 const path = require("path");
 const hbs = require("hbs");
 const nodemailer = require('nodemailer'); // Make sure to install nodemailer
-const { contact, register, retail, Invoice, Stock, Shopcontact } = require("./mongodb");
+const jwt = require('jsonwebtoken');
+const { contact, register, retail, Invoice, Stock, Shopcontact ,Admin} = require("./mongodb");
 
 const tempelatePath = path.join(__dirname, '../tempelates');
 const publicPath = path.join(__dirname, '../public');
@@ -13,9 +14,58 @@ const publicPath = path.join(__dirname, '../public');
 const session = require("express-session");
 
 
+
+require('dotenv').config();
+
+const JWT_SECRET = process.env.JWT_SECRET; // Use the secret from the .env file
+
+
+
+// Function to generate a reset token
+function generateResetToken(user) {
+    // Create a token with the user's email and an expiration time
+    return jwt.sign({ email: user.email }, JWT_SECRET, { expiresIn: '1h' }); // Token expires in 1 hour
+}
+
+// Function to verify the reset token
+function verifyResetToken(token) {
+    try {
+        const decoded = jwt.verify(token, JWT_SECRET);
+        return decoded; // Returns the decoded token if valid
+    } catch (error) {
+        return null; // Return null if the token is invalid
+    }
+}
+
+// Function to send the reset email
+async function sendResetEmail(email, resetLink) {
+    // Create a transporter object using your email service
+    const transporter = nodemailer.createTransport({
+        service: 'gmail', // Use your email service (e.g., Gmail)
+        auth: {
+            user: process.env.EMAIL_USER,  // Your email address
+            pass: process.env.EMAIL_PASS, // Your email password or app password
+        },
+    });
+
+    
+    
+    // Email options
+    const mailOptions = {
+        from: process.env.EMAIL_USER, // Sender address
+        to: email, // List of recipients
+        subject: 'Password Reset Request', // Subject line
+        text: `You requested a password reset. Click the link to reset your password: ${resetLink}`, // Plain text body
+        html: `<p>You requested a password reset. Click the link to reset your password: <a href="${resetLink}">Reset Password</a></p>`, // HTML body
+    };
+
+    // Send the email
+    await transporter.sendMail(mailOptions);
+}
+
 // Session middleware
 app.use(session({
-    secret: '', // Change this to a secure random string
+    secret: 'Muddu', // Change this to a secure random string
     resave: false,
     saveUninitialized: true,
     cookie: { secure: false } // Set to true if using HTTPS
@@ -73,6 +123,20 @@ app.get("/register", (req, res) => {
     res.render("register");
 });
 
+app.get("/admin-login", (req, res) => {
+    res.render("admin-login");
+});
+
+app.get("/forgot-password", (req, res) => {
+    res.render("forgot-password"); // Create a new view for the forgot password page
+});
+
+app.get("/reset-password", (req, res) => {
+    const { token } = req.query;
+    // Verify the token (implement this function)
+    res.render("reset-password", { token });
+});
+
 app.get("/retail", (req, res) => {
     const email = req.query.email || ''; // Get email from query parameter
     res.render("retail", { email }); // Pass email to the template
@@ -117,10 +181,10 @@ app.get("/logout", (req, res) => {
                 return res.redirect("/home");
             }
             res.clearCookie("connect.sid"); // Clear the session cookie
-            res.redirect("/register"); // Redirect to login page
+            res.redirect("/"); // Redirect to login page
         });
     } else {
-        res.redirect("/register"); // If no session exists, just redirect
+        res.redirect("/"); // If no session exists, just redirect
     }
 });
 
@@ -268,6 +332,30 @@ app.get("/get-product-details", async (req, res) => {
     } catch (error) {
         console.error("Error fetching product details:", error);
         res.status(500).json({ message: "Error fetching product details" });
+    }
+});
+
+app.get("/admin/dashboard", async (req, res) => {
+    if (!req.session.adminId) {
+        return res.redirect("/admin/login"); // Redirect to login if not authenticated
+    }
+
+    try {
+        const contacts = await contact.find({});
+        const users = await register.find({});
+        const shops = await retail.find({});
+        const invoices = await Invoice.find({});
+        const stocks = await Stock.find({});
+
+        res.render("admin-dashboard", {
+            contacts,
+            users,
+            shops,
+            invoices,
+            stocks
+        });
+    } catch (error) {
+        res.status(500).send("Error fetching data");
     }
 });
 
@@ -490,14 +578,14 @@ app.post('/send-invoice', async (req, res) => {
         const transporter = nodemailer.createTransport({
             service: 'gmail', // Use your email service
             auth: {
-                user: ' Your email', // Your email
-                pass: 'Your email password', // Your email password
+                user: process.env.EMAIL_USER, // Your email
+                pass: process.env.EMAIL_PASS, // Your email password
             },
         });
 
         // Email options
         const mailOptions = {
-            from: 'Your email',
+            from: process.env.EMAIL_USER,
             to: email,
             subject: `Invoice #${invoice.invoiceNumber}`,
             text: `Here is your invoice:\n\n${JSON.stringify(invoice, null, 2)}`, // Customize the email content as needed
@@ -509,6 +597,124 @@ app.post('/send-invoice', async (req, res) => {
     } catch (error) {
         console.error('Error sending email:', error);
         res.status(500).send('Error sending invoice');
+    }
+});
+
+// Admin Registration
+app.post("/admin/signup", async (req, res) => {
+    const { username, password } = req.body;
+
+    try {
+        const hashedPassword = await bcrypt.hash(password, 10);
+        const newAdmin = new Admin({ username, password: hashedPassword });
+        await newAdmin.save();
+        res.send("Admin registered successfully");
+    } catch (error) {
+        res.status(500).send("Error registering admin");
+    }
+});
+
+// Create a Temporary Admin Registration Route .Add a new route in your index.js file that allows you to register an admin user. This route can be accessed via a simple HTTP request (e.g., using Postman or cURL).
+// app.post("/admin/register", async (req, res) => {
+//     const { username, password } = req.body;
+
+//     if (!username || !password) {
+//         return res.status(400).send("Username and password are required.");
+//     }
+
+//     try {
+//         const existingAdmin = await Admin.findOne({ username });
+//         if (existingAdmin) {
+//             return res.status(400).send("Admin with this username already exists.");
+//         }
+
+//         const hashedPassword = await bcrypt.hash(password, 10);
+//         const newAdmin = new Admin({ username, password: hashedPassword });
+//         await newAdmin.save();
+
+//         res.send("Admin registered successfully");
+//     } catch (error) {
+//         console.error("Error registering admin:", error);
+//         res.status(500).send("Error registering admin");
+//     }
+// });
+// Step 2: Use Postman or cURL to Register
+// You can use Postman or cURL to send a POST request to the /admin/register endpoint to create a new admin user.
+
+// Using Postman
+// 1.Open Postman.
+// 2.Set the request type to POST.
+// 3.Enter the URL: http://localhost:3000/admin/register.
+// 4.In the "Body" tab, select "raw" and choose "JSON" from the dropdown.
+// 5.Enter the following JSON data:
+// {
+//     "username": "yourAdminUsername",
+//     "password": "yourAdminPassword"
+// }
+
+// Admin Login
+app.post("/admin/login", async (req, res) => {
+    const { username, password } = req.body;
+
+    try {
+        const admin = await Admin.findOne({ username });
+        if (admin && await bcrypt.compare(password, admin.password)) {
+            req.session.adminId = admin._id; // Store admin ID in session
+            res.redirect("/admin/dashboard"); // Redirect to admin dashboard
+        } else {
+            res.send("Invalid credentials");
+        }
+    } catch (error) {
+        res.status(500).send("Error logging in");
+    }
+});
+
+app.post("/send-reset-link", async (req, res) => {
+    const { email } = req.body;
+
+    // Check if the email exists in the database
+    const user = await register.findOne({ email });
+    if (!user) {
+        return res.status(400).send("Email not found");
+    }
+
+    // Generate a password reset token (you can use JWT or any other method)
+    const token = generateResetToken(user); // Implement this function
+
+    // Send the reset link via email (using nodemailer)
+    const resetLink = `http://localhost:3000/reset-password?token=${token}`;
+    await sendResetEmail(email, resetLink); // Implement this function
+
+    res.send("Password reset link sent to your email");
+});
+
+app.post("/update-password", async (req, res) => {
+    const { token, newPassword } = req.body;
+
+    // Verify the token and find the user
+    const decoded = verifyResetToken(token); // Implement this function to decode the token
+    if (!decoded) {
+        return res.status(400).send("Invalid token");
+    }
+
+    // Find the user by email
+    const user = await register.findOne({ email: decoded.email }); // Ensure this matches your schema
+
+    if (!user) {
+        return res.status(404).send("User  not found");
+    }
+
+    // Hash the new password and update the user
+    const hashedPassword = await bcrypt.hash(newPassword, 10);
+    user.password = hashedPassword; // Update the password field
+
+    try {
+        await user.save(); // Save the updated user
+         console.log("User  found:", user);//Check what user is retrieved
+        res.send("Password has been updated successfully");
+    } catch (error) {
+        console.error("Error saving user:", error);
+        res.status(500).send("Error updating password");
     }
 });
 

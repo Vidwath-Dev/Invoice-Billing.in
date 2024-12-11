@@ -134,6 +134,21 @@ const shopcontactSchema = new mongoose.Schema({
     date: { type: Date, default: Date.now }
 });
 
+// Admin schema
+const AdminSchema = new mongoose.Schema({
+    username: {
+        type: String,
+        required: true,
+        unique: true
+    },
+    password: {
+        type: String,
+        required: true
+    }
+});
+
+
+
 //defining the colection part
 const register = new mongoose.model("Register", LogInSchema)
 const contact = new mongoose.model("Contact_info", ContactSchema)
@@ -141,6 +156,7 @@ const retail = new mongoose.model("Retail_info", RetailSchema)
 const Invoice = new mongoose.model("Invoice", InvoiceSchema);
 const Stock = mongoose.model("Stock", stockSchema);
 const Shopcontact =new mongoose.model("shopcontact_info", shopcontactSchema);
+const Admin = mongoose.model("Admin", AdminSchema);
 
 module.exports = {
     register,
@@ -148,5 +164,6 @@ module.exports = {
     retail,
     Invoice,
     Stock,
-    Shopcontact
+    Shopcontact,
+    Admin
 };
