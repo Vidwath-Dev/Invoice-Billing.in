@@ -54,9 +54,9 @@
                 <div id="invoice-scanner-container">
                     <form id="invoice-form" action="/submit-invoice" method="POST">
                         <h2>Create Invoice</h2>
-                        <button type="button" id="scan-invoice-barcode" class="scan-btn">Scan Barcode for
-                            Invoice</button>
-                        <div id="invoice-scanner-container"></div>
+                        {{!-- <button type="button" id="scan-invoice-barcode" class="scan-btn">Scan Barcode for
+                            Invoice</button> --}}
+                        {{!-- <div id="invoice-scanner-container"></div> --}}
                         <label for="invoiceNumber">Barcode ID:</label>
                         <textarea type="text" id="invoiceNumber" name="invoiceNumber" required></textarea>
 
@@ -77,8 +77,8 @@
                 <div id="invoice-scanner-container">
                     <form id="add-stock-form" action="/add-stock" method="POST">
                         <h2>Add Stock</h2>
-                        <button type="button" id="scan-stock-barcode" class="scan-btn">Scan Barcode for Stock</button>
-                        <div id="scanner-container"></div>
+                        {{!-- <button type="button" id="scan-stock-barcode" class="scan-btn">Scan Barcode for Stock</button> --}}
+                        {{!-- <div id="scanner-container"></div> --}}
 
                         <label for="barcodeId">Enter Barcode ID:</label>
                         <input type="text" id="barcodeId" name="barcodeId" required>
@@ -89,8 +89,8 @@
                         <label for="stockIn">Stock-In:</label>
                         <input type="number" id="stockIn" name="stockIn" required>
 
-                        {{!-- <label for="stockOut">Stock-Out:</label> --}}
-                        {{!-- <input type="number" id="stockOut" name="stockOut" required> --}}
+                        <label for="stockOut">Stock-Out:</label> 
+                        <input type="number" id="stockOut" name="stockOut" >
 
                         <button type="submit">Add Stock</button>
                     </form>

@@ -359,6 +359,8 @@ app.get("/admin/dashboard", async (req, res) => {
     }
 });
 
+
+
 app.post("/contact", async (req, res) => {
     const data = {
         name: req.body.name,
@@ -574,6 +576,13 @@ app.post('/send-invoice', async (req, res) => {
             return res.status(404).send('Invoice not found');
         }
 
+        // Fetch shop details using the userEmail from the invoice
+        const shopDetails = await retail.findOne({ email: invoice.userEmail });
+
+        if (!shopDetails) {
+            return res.status(404).send('Shop details not found');
+        }
+
         // Set up nodemailer transporter
         const transporter = nodemailer.createTransport({
             service: 'gmail', // Use your email service
@@ -583,12 +592,47 @@ app.post('/send-invoice', async (req, res) => {
             },
         });
 
+        // Create a formatted HTML email content
+        const htmlContent = `
+            <h1>Invoice #${invoice._id}</h1>
+            <p>Dear Customer,</p>
+            <p>Thank you for your business! Please find your invoice details below:</p>
+            <h3>Shop Details:</h3>
+            <p><strong>Owner Name:</strong> ${shopDetails.ownerName}</p>
+            <p><strong>Shop Name:</strong> ${shopDetails.shopName}</p>
+            <p><strong>Address:</strong> ${shopDetails.shopAddress}</p>
+            <p><strong>Contact Number:</strong> ${shopDetails.contactNumber}</p>
+            <h3>Invoice Items:</h3>
+            <table style="width: 100%; border-collapse: collapse;">
+                <thead>
+                    <tr>
+                        <th style="border: 1px solid #ddd; padding: 8px;">Description</th>
+                        <th style="border: 1px solid #ddd; padding: 8px;">Quantity</th>
+                        <th style="border: 1px solid #ddd; padding: 8px;">Price</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    ${invoice.items.map(item => `
+                        <tr>
+                            <td style="border: 1px solid #ddd; padding: 8px;">${item.description}</td>
+                            <td style="border: 1px solid #ddd; padding: 8px;">${item.quantity}</td>
+                            <td style="border: 1px solid #ddd; padding: 8px;">Rs:${item.price.toFixed(2)}</td>
+                        </tr>
+                    `).join('')}
+                </tbody>
+            </table>
+            <h3>Total Amount: Rs:${invoice.totalAmount.toFixed(2)}</h3>
+            <p>If you have any questions regarding this invoice, please feel free to contact us.</p>
+            <p>Best Regards,<br>Invenzzo</p>
+        `;
+
         // Email options
         const mailOptions = {
             from: process.env.EMAIL_USER,
             to: email,
-            subject: `Invoice #${invoice.invoiceNumber}`,
-            text: `Here is your invoice:\n\n${JSON.stringify(invoice, null, 2)}`, // Customize the email content as needed
+            subject: `Customer Invoice`,
+            text: `Here is your invoice: ${invoice._id}`, // Fallback text for email clients that do not support HTML
+            html: htmlContent, // Use the formatted HTML content
         };
 
         // Send email
