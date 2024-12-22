@@ -65,7 +65,7 @@ async function sendResetEmail(email, resetLink) {
 
 // Session middleware
 app.use(session({
-    secret: 'Muddu', // Change this to a secure random string
+    secret: '', // Change this to a secure random string
     resave: false,
     saveUninitialized: true,
     cookie: { secure: false } // Set to true if using HTTPS
