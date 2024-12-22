@@ -1,10 +1,10 @@
 # Mini Project - Shop Management System
 
-Overview
+1.Overview
 
 This project is a Shop Management System that allows users to manage their retail shops, including functionalities for user registration, shop details management, invoice generation, and stock tracking. The application is built using Node.js, Express, MongoDB, and various front-end technologies.
 
-Features
+2.Features
 
 1.User registration and login
 2.Shop details management
@@ -13,7 +13,7 @@ Features
 5.Contact form for user inquiries
 6.Admin dashboard for managing users and shops
 
-Technologies Used
+3.Technologies Used
 
 1.Node.js
 2.Express.js
@@ -24,7 +24,7 @@ Technologies Used
 7.Nodemailer for email functionality
 8.HTML5, CSS3 for front-end design
 
-Getting Started
+4.Getting Started
 
 Prerequisites
 
@@ -86,17 +86,17 @@ npx nodemon src/index.js
 
 The server will start on http://localhost:3000. You can access the application by opening this URL in your web browser.
 
-Usage
+5.Usage
 
 1.Navigate to the home page to register or log in.
 2.After logging in, you can manage your shop details, view invoices, and track stock.
 3.Admin users can access the admin dashboard to manage users and shops.
 
-Contributing
+6.Contributing
 Contributions are welcome! If you have suggestions for improvements or new features, feel free to create an issue or submit a pull request.
 
-License
+7.License
 This project is licensed under the MIT License - see the LICENSE file for details.
 
-Acknowledgments
+8.Acknowledgments
 Thanks to the contributors and the open-source community for their support and resources.
