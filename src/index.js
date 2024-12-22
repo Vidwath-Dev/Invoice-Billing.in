@@ -371,9 +371,9 @@ app.post("/contact", async (req, res) => {
 
     try {
         await contact.insertMany([data]);
-        res.send("Data submitted");
+        res.json({ success: true, message: "Data submitted successfully!" });
     } catch (error) {
-        res.status(500).send("Error submitting data");
+        res.status(500).json({ success: false, message: "Error submitting data." });
     }
 });
 
@@ -387,10 +387,10 @@ app.post("/shopcontact", async (req, res) => {
 
     try {
         await Shopcontact.insertMany([data]);
-        res.send("Data submitted");
+        res.json({ success: true, message: "Data submitted successfully!" });
     } catch (error) {
         // console.error("Error inserting data:", error); // Log the error
-        res.status(500).send("Error submitting data");
+        res.status(500).json({ success: false, message: "Error submitting data." });
     }
 });
 
@@ -754,11 +754,11 @@ app.post("/update-password", async (req, res) => {
 
     try {
         await user.save(); // Save the updated user
-         console.log("User  found:", user);//Check what user is retrieved
-        res.send("Password has been updated successfully");
+        // console.log("User  found:", user); 
+        res.json({ success: true, message: "Password has been updated successfully!" });
     } catch (error) {
         console.error("Error saving user:", error);
-        res.status(500).send("Error updating password");
+        res.status(500).json({ success: false, message: "Error updating password!" });
     }
 });
 

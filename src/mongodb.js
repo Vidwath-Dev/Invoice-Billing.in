@@ -1,7 +1,7 @@
 const mongoose = require("mongoose")
 
 //mogodb connection
-mongoose.connect("mongodb://localhost:27017/Mini_Project")                      //command is used to connect node to mongodb database
+mongoose.connect("mongodb://localhost:27017/Mini_Project")  //command is used to connect node to mongodb database
     .then(() => {
         console.log("mongodb connected");
     })

@@ -4,6 +4,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"
     integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz"
     crossorigin="anonymous"></script>
@@ -30,11 +31,11 @@
     <form class="contact-form" id="contactForm" action="/contact" method="post">
       <h1>Get in Touch</h1>
 
-      <div class="success-message" id="successMessage">
+      <div class="success-message" id="successMessage" style="display:none;">
         Message sent successfully! We'll get back to you soon.
       </div>
 
-      <div class="error-message" id="errorMessage">
+      <div class="error-message" id="errorMessage" style="display:none;">
         There was an error sending your message. Please try again.
       </div>
 
@@ -61,11 +62,41 @@
       <button type="submit">
         Send Message
       </button>
+      <div id="responseMessage" style="margin-top: 10px;"></div>
     </form>
+
+    <script>
+      $(document).ready(function () {
+        $('#contactForm').on('submit', function (event) {
+          event.preventDefault(); // Prevent the default form submission
+
+          $.ajax({
+            type: 'POST',
+            url: '/contact',
+            data: $(this).serialize(), // Serialize form data
+            success: function (response) {
+              // Display the message below the button
+              $('#responseMessage').removeClass('success error').hide();
+
+              // Display the message below the button
+              $('#responseMessage').text(response.message);
+              if (response.success) {
+                $('#responseMessage').addClass('success').show(); // Add success class
+              } else {
+                $('#responseMessage').addClass('error').show(); // Add error class
+              }
+            },
+            error: function () {
+              $('#responseMessage').text("An error occurred.");
+              $('#responseMessage').css('color', 'red');
+            }
+          });
+        });
+      });
+    </script>
   </div>
 
   <script>
-
     // 3D hover effect
     const form = document.querySelector('.contact-form');
 
@@ -87,7 +118,6 @@
       form.style.transform = 'rotateX(0) rotateY(0)';
     });
   </script>
-
 
 </body>
 

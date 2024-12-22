@@ -194,3 +194,44 @@ transition: width 0.3s;
 .nav a:hover::after {
 width: 100%;
 }
+
+#responseMessage {
+    margin-top: 10px;
+    padding: 15px;
+    border-radius: 5px;
+    font-size: 1.1rem;
+    transition: all 0.3s ease; /* Smooth transition for hover effects */
+    display: none; /* Initially hidden */
+}
+
+/* Success message styles */
+#responseMessage.success {
+    background-color: rgba(76, 175, 80, 0.1); /* Light green background */
+    color: #4CAF50; /* Dark green text */
+    border: 1px solid #4CAF50; /* Dark green border */
+}
+
+/* Error message styles */
+#responseMessage.error {
+    background-color: rgba(244, 67, 54, 0.1); /* Light red background */
+    color: #F44336; /* Dark red text */
+    border: 1px solid #F44336; /* Dark red border */
+}
+
+/* Animation for showing the message */
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(-10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* Apply animation when the message is displayed */
+#responseMessage.show {
+    display: block; /* Show the message */
+    animation: fadeIn 0.5s ease; /* Fade-in animation */
+}
