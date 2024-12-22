@@ -1,4 +1,4 @@
-Mini Project - Shop Management System
+#Mini Project - Shop Management System
 
 Overview
 
