@@ -1,0 +1,204 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="/css/shoptrack.css">
+    <title>User Dashboard</title>
+    <!-- Include QuaggaJS library for barcode scanning -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/quagga/0.12.1/quagga.min.js"></script>
+    <style>
+        #scanner-container {
+            width: 300px;
+            height: 250px;
+            border: 2px solid #333;
+            margin: 10px auto;
+            display: none;
+        }
+
+        .scan-btn {
+            display: block;
+            margin: 10px auto;
+            padding: 10px;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            cursor: pointer;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="main-background">
+        <div class="container">
+            <h1>Welcome, {{ownerName}}</h1>
+            <p>Your email: {{userEmail}}</p>
+        </div>
+
+        <div class="navigation">
+            {{#if session.userEmail}}
+            <a href="/home?email={{session.userEmail}}" class="btn">Home</a>
+            <a href="/shopabout?email={{session.userEmail}}" class="btn">About</a>
+            <a href="/shopcontact?email={{session.userEmail}}" class="btn">Contact</a>
+            <a href="/shopprofile?email={{session.userEmail}}" class="btn">Profile</a>
+            <a href="/shoptrack?email={{session.userEmail}}" class="btn">Track</a>
+            {{else}}
+            <a href="/register" class="btn">Login to Edit Shop Details</a>
+            {{/if}}
+        </div>
+
+        <div class="invoice-form">
+            <!-- Invoice Creation Form with Barcode Scanning -->
+            <div style="margin-left: 100px;"class="stock-1">
+                <div id="invoice-scanner-container">
+                    <form id="invoice-form" action="/submit-invoice" method="POST">
+                        <h2>Create Invoice</h2>
+                        {{!-- <button type="button" id="scan-invoice-barcode" class="scan-btn">Scan Barcode for
+                            Invoice</button> --}}
+                        {{!-- <div id="invoice-scanner-container"></div> --}}
+                        <label for="invoiceNumber">Barcode ID:</label>
+                        <textarea type="text" id="invoiceNumber" name="invoiceNumber" required></textarea>
+
+                        <label for="items">Enter the Items (Barcode_ID ,Product_Name, Quantity, Price):</label>
+                        <textarea id="items" name="items" required></textarea>
+
+                        <button type="submit">Create Invoice</button>
+                        {{#if session.userEmail}}
+                        <a href="/invoices?email={{session.userEmail}}" class="btn">View Invoices</a>
+                        {{/if}}
+
+                    </form>
+                </div>
+            </div>
+
+            <!-- Stock Addition Form with Barcode Scanning -->
+            <div style="margin-left: 180px;" class="stock-2">
+                <div id="invoice-scanner-container">
+                    <form id="add-stock-form" action="/add-stock" method="POST">
+                        <h2>Add Stock</h2>
+                        {{!-- <button type="button" id="scan-stock-barcode" class="scan-btn">Scan Barcode for Stock</button> --}}
+                        {{!-- <div id="scanner-container"></div> --}}
+
+                        <label for="barcodeId">Enter Barcode ID:</label>
+                        <input type="text" id="barcodeId" name="barcodeId" required>
+
+                        <label for="description">Enter Product name:</label>
+                        <input type="text" id="description" name="description" required>
+
+                        <label for="stockIn">Stock-In:</label>
+                        <input type="number" id="stockIn" name="stockIn" required>
+
+                        <label for="stockOut">Stock-Out:</label> 
+                        <input type="number" id="stockOut" name="stockOut" >
+
+                        <button type="submit">Add Stock</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Barcode Scanning for Stock
+        document.getElementById('scan-stock-barcode').addEventListener('click', function () {
+            const scannerContainer = document.getElementById('scanner-container');
+            scannerContainer.style.display = 'block';
+
+            Quagga.init({
+                inputStream: {
+                    name: "Live",
+                    type: "LiveStream",
+                    target: scannerContainer
+                },
+                decoder: {
+                    readers: ["ean_reader", "code_128_reader", "code_39_reader", "code_39_vin_reader", "codabar_reader"]
+                }
+            }, function (err) {
+                if (err) {
+                    console.log(err);
+                    return;
+                }
+                console.log("Initialization finished. Ready to start");
+                Quagga.start();
+            });
+
+            Quagga.onDetected(function (result) {
+                const code = result.codeResult.code;
+                document.getElementById('barcodeId').value = code;
+
+                // Optional: Try to fetch product details based on barcode
+                fetchProductDetails(code);
+
+                Quagga.stop();
+                scannerContainer.style.display = 'none';
+            });
+        });
+
+        // Barcode Scanning for Invoice
+        document.getElementById('scan-invoice-barcode').addEventListener('click', function () {
+            const scannerContainer = document.getElementById('invoice-scanner-container');
+            scannerContainer.style.display = 'block';
+
+            Quagga.init({
+                inputStream: {
+                    name: "Live",
+                    type: "LiveStream",
+                    target: scannerContainer
+                },
+                decoder: {
+                    readers: ["ean_reader", "code_128_reader", "code_39_reader", "code_39_vin_reader", "codabar_reader"]
+                }
+            }, function (err) {
+                if (err) {
+                    console.log(err);
+                    return;
+                }
+                console.log("Initialization finished. Ready to start");
+                Quagga.start();
+            });
+
+            Quagga.onDetected(function (result) {
+                const code = result.codeResult.code;
+                // Fetch product details and populate invoice items
+                fetchInvoiceProductDetails(code);
+
+                Quagga.stop();
+                scannerContainer.style.display = 'none';
+            });
+        });
+
+        // Function to fetch product details based on barcode
+        async function fetchProductDetails(barcode) {
+            try {
+                const response = await fetch(`/get-product-details?barcode=${barcode}`);
+                const productData = await response.json();
+
+                if (productData) {
+                    document.getElementById('description').value = productData.description || '';
+                }
+            } catch (error) {
+                console.error('Error fetching product details:', error);
+            }
+        }
+
+        // Function to fetch product details for invoice
+        async function fetchInvoiceProductDetails(barcode) {
+            try {
+                const response = await fetch(`/get-product-details?barcode=${barcode}`);
+                const productData = await response.json();
+
+                if (productData) {
+                    // Append to existing items or create new
+                    const itemsTextarea = document.getElementById('items');
+                    const newItemEntry = `${barcode},${productData.description},1,${productData.price || 0}\n`;
+                    itemsTextarea.value += newItemEntry;
+                }
+            } catch (error) {
+                console.error('Error fetching invoice product details:', error);
+            }
+        }
+    </script>
+</body>
+
+</html>

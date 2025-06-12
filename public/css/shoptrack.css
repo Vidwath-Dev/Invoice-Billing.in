@@ -1,0 +1,226 @@
+/* Global Styles */
+body {
+    font-family: 'Arial', sans-serif;
+    margin: 0;
+    padding: 0;
+    background: linear-gradient(145deg, #007bff, #0056b3);
+    color: #333;
+    overflow-x: hidden;
+}
+
+/* Main Background */
+.main-background {
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    padding: 20px;
+}
+
+/* Container Styling */
+.container {
+    max-width: 800px;
+    width: 90%;
+    margin: 20px auto;
+    padding: 20px;
+    background: linear-gradient(145deg, #ffffff, #f0f0f0);
+    border-radius: 15px;
+    box-shadow: 10px 10px 20px rgba(0, 0, 0, 0.2), -10px -10px 20px rgba(255, 255, 255, 0.7);
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.container:hover {
+    transform: translateY(-5px);
+    box-shadow: 12px 12px 25px rgba(0, 0, 0, 0.3), -12px -12px 25px rgba(255, 255, 255, 0.8);
+}
+
+/* Headings */
+h1 {
+    text-align: center;
+    color: #2c3e50;
+    text-shadow: 1px 1px 5px rgba(0, 0, 0, 0.1);
+    font-size: 2rem;
+}
+
+p {
+    text-align: center;
+    color: #555;
+    margin: 10px 0;
+}
+
+/* Navigation */
+.navigation {
+    max-width: 800px;
+    width: 90%;
+    margin: 20px auto;
+    padding: 10px 0;
+    background: linear-gradient(145deg, #ffffff, #f0f0f0);
+    border-radius: 15px;
+    box-shadow: 10px 10px 20px rgba(0, 0, 0, 0.2), -10px -10px 20px rgba(255, 255, 255, 0.7);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-wrap: wrap; /* Wrap items on smaller screens */
+}
+
+.navigation a {
+    display: inline-block;
+    padding: 12px 18px;
+    margin: 10px;
+    font-size: 1rem;
+    color: #fff;
+    background: linear-gradient(145deg, #007bff, #0056b3);
+    text-decoration: none;
+    border-radius: 25px;
+    box-shadow: 3px 3px 8px rgba(0, 0, 0, 0.2), -3px -3px 8px rgba(255, 255, 255, 0.3);
+    transition: all 0.3s ease;
+}
+
+.navigation a:hover {
+    transform: scale(1.05);
+    background: linear-gradient(145deg, #0056b3, #003f82);
+    box-shadow: 3px 3px 15px rgba(0, 0, 0, 0.3), -3px -3px 15px rgba(255, 255, 255, 0.4);
+}
+
+/* Make navigation items horizontal and responsive */
+@media (max-width: 768px) {
+    .navigation {
+        justify-content: space-evenly; /* Distribute items evenly */
+    }
+
+    .navigation a {
+        margin: 5px;
+        font-size: 0.9rem;
+    }
+}
+
+@media (max-width: 480px) {
+    .navigation {
+        flex-direction: column; /* Stack items vertically on small screens */
+        align-items: stretch;
+    }
+
+    .navigation a {
+        width: 100%; /* Make buttons take full width on small screens */
+        padding: 10px;
+        margin: 5px 0;
+    }
+}
+
+
+/* Invoice Form Styling */
+.invoice-form {
+    max-width: 1200px;
+    width: 100%;
+    margin: 20px auto;
+    padding: 20px;
+    background: linear-gradient(145deg, #ffffff, #f0f0f0);
+    border-radius: 15px;
+    box-shadow: 10px 10px 20px rgba(0, 0, 0, 0.2), -10px -10px 20px rgba(255, 255, 255, 0.7);
+    display: flex;
+}
+
+
+.invoice-form label {
+    display: block;
+    margin: 10px 0 5px;
+    font-weight: bold;
+}
+
+.invoice-form input[type="text"],
+.invoice-form textarea,
+.invoice-form input[type="number"] {
+    width: 100%;
+    padding: 12px;
+    margin-bottom: 15px;
+    border: 1px solid #ccc;
+    border-radius: 8px;
+    box-sizing: border-box;
+    transition: border-color 0.3s ease;
+}
+
+.invoice-form input[type="text"]:focus,
+.invoice-form input[type="number"]:focus,
+.invoice-form textarea:focus {
+    border-color: #007bff;
+    box-shadow: 0 0 5px rgba(0, 123, 255, 0.5);
+}
+
+.invoice-form button {
+    padding: 12px 18px;
+    color: #fff;
+    background-color: #28a745;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: background-color 0.3s, transform 0.3s;
+    font-size: 1.1rem;
+}
+
+.invoice-form button:hover {
+    background-color: #218838;
+    transform: scale(1.05);
+}
+
+.invoice-form a {
+    display: inline-block;
+    padding: 12px 18px;
+    margin-top: 15px;
+    font-size: 1rem;
+    color: #fff;
+    background-color: #007bff;
+    border-radius: 8px;
+    text-decoration: none;
+    transition: background-color 0.3s, transform 0.3s;
+}
+
+.invoice-form a:hover {
+    background-color: #0056b3;
+    transform: scale(1.05);
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    .container {
+        padding: 15px;
+    }
+
+    h1 {
+        font-size: 1.8rem;
+    }
+
+    .navigation a,
+    .invoice-form input[type="text"],
+    .invoice-form input[type="number"],
+    .invoice-form textarea {
+        font-size: 0.9rem;
+        padding: 10px;
+    }
+
+    .invoice-form button,
+    .invoice-form a {
+        padding: 10px 15px;
+        font-size: 1rem;
+    }
+}
+
+@media (max-width: 480px) {
+    h1 {
+        font-size: 1.5rem;
+    }
+
+    .navigation a,
+    .invoice-form input[type="text"],
+    .invoice-form input[type="number"],
+    .invoice-form textarea {
+        font-size: 0.8rem;
+        padding: 8px;
+    }
+
+    .invoice-form button,
+    .invoice-form a {
+        padding: 8px 12px;
+        font-size: 0.9rem;
+    }
+}

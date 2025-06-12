@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Retail Shop Registration</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="/css/retail.css">
+</head>
+<body>
+    <div class="registration-container">
+        <div class="registration-wrapper">
+            <form id="shopSignupForm" action="/retail" method="post">
+                <div class="form-header">
+                    <h1>Retail Shop Registration</h1>
+                    <p>Complete your business registration with accurate details</p>
+                </div>
+
+                <div class="form-grid">
+                    <div class="form-group">
+                        <label for="shopName">Shop Name</label>
+                        <div class="input-wrapper">
+                            <i class="icon shop-icon"></i>
+                            <input type="text" id="shopName" name="shopName" placeholder="Enter your shop name" required>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="ownerName">Owner Name</label>
+                        <div class="input-wrapper">
+                            <i class="icon owner-icon"></i>
+                            <input type="text" id="ownerName" name="ownerName" placeholder="Enter owner's full name" required>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="contactNumber">Contact Number</label>
+                        <div class="input-wrapper">
+                            <i class="icon phone-icon"></i>
+                            <input type="tel" id="contactNumber" name="contactNumber" placeholder="Enter contact number" required>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="email">Email Address</label>
+                        <div class="input-wrapper">
+                            <i class="icon email-icon"></i>
+                            <input type="email" id="email" name="email" value="{{email}}" readonly required>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="shopAddress">Shop Address</label>
+                        <div class="input-wrapper">
+                            <i class="icon address-icon"></i>
+                            <input type="text" id="shopAddress" name="shopAddress" placeholder="Enter full shop address" required>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="shopType">Shop Type</label>
+                        <div class="input-wrapper">
+                            <i class="icon shop-type-icon"></i>
+                            <select id="shopType" name="shopType" required>
+                                <option value="">Select Shop Type</option>
+                                <option value="clothing">Clothing</option>
+                                <option value="electronics">Electronics</option>
+                                <option value="grocery">Grocery</option>
+                                <option value="pharmacy">Pharmacy</option>
+                                <option value="other">Other</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="registrationNumber">Business Registration Number</label>
+                        <div class="input-wrapper">
+                            <i class="icon reg-number-icon"></i>
+                            <input type="text" id="registrationNumber" name="registrationNumber" placeholder="Enter registration number" required>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="taxId">Tax Identification Number</label>
+                        <div class="input-wrapper">
+                            <i class="icon tax-icon"></i>
+                            <input type="text" id="taxId" name="taxId" placeholder="Enter tax ID" required>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="operatingYears">Years in Business</label>
+                        <div class="input-wrapper">
+                            <i class="icon years-icon"></i>
+                            <input type="number" id="operatingYears" name="operatingYears" min="0" max="100" placeholder="Enter years in business" required>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="annualRevenue">Annual Revenue (Estimated)</label>
+                        <div class="input-wrapper">
+                            <i class="icon revenue-icon"></i>
+                            <input type="number" id="annualRevenue" name="annualRevenue" min="0" placeholder="Enter estimated annual revenue" required>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="form-footer">
+                    <button type="submit" class="submit-btn">Complete Registration</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        // Form validation script remains the same as in previous version
+    </script>
+</body>
+</html>

@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="/css/shopabout.css">
+    <title>User Dashboard</title>
+    <style>
+        .value-proposition {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 30px;
+        }
+
+        .value-card {
+            flex: 1;
+            margin: 0 15px;
+            padding: 20px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 10px;
+            text-align: center;
+            transition: transform 0.3s ease;
+        }
+
+        .value-card:hover {
+            transform: scale(1.05);
+            background: rgba(255, 255, 255, 0.2);
+        }
+
+        .testimonial {
+            background: #f4f4f4;
+            padding: 20px;
+            margin-top: 30px;
+            border-radius: 10px;
+            text-align: center;
+            font-style: italic;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="main-background">
+        <div class="container">
+            <h1>Welcome, {{ownerName}}</h1>
+            <p>Your email: {{userEmail}}</p>
+        </div>
+        <div class="navigation">
+            {{#if session.userEmail}}
+            <a href="/home?email={{session.userEmail}}" class="btn">Home</a>
+            {{else}}
+            <a href="/register" class="btn">Login to Edit Shop Details</a>
+            {{/if}}
+
+            <a href="/shopabout?email={{session.userEmail}}" class="btn">About</a>
+            <a href="/shopcontact?email={{session.userEmail}}" class="btn">Contact</a>
+            <a href="/shopprofile?email={{session.userEmail}}" class="btn">Profile</a>
+            <a href="/shoptrack?email={{session.userEmail}}" class="btn">Track</a>
+            
+
+            <h1>Inventory Pro: Beyond Inventory Management</h1>
+            <p>Transforming Small Businesses with Smart Technology</p>
+
+            <div class="value-proposition">
+                <div class="value-card">
+                    <h3>Efficiency</h3>
+                    <p>Cut inventory management time by up to 70%</p>
+                </div>
+                <div class="value-card">
+                    <h3>Accuracy</h3>
+                    <p>Reduce human error with automated tracking</p>
+                </div>
+                <div class="value-card">
+                    <h3>Growth</h3>
+                    <p>Make data-driven decisions for business expansion</p>
+                </div>
+            </div>
+
+            <h2>Why Choose Inventory Pro?</h2>
+            <ul>
+                <li>🚀 Cloud-based solution accessible from anywhere</li>
+                <li>💡 Intelligent stock prediction algorithms</li>
+                <li>🔒 Bank-grade security for your business data</li>
+                <li>📊 Customizable reports and dashboards</li>
+                <li>🤝 24/7 customer support</li>
+            </ul>
+
+            <div class="testimonial">
+                <blockquote>
+                    "Inventory Pro turned our inventory chaos into a streamlined, profitable system. We've cut costs and
+                    increased sales!"
+                    <strong>-{{ownerName}} </strong>, Retail Store Owner
+                </blockquote>
+            </div>
+
+        </div>
+
+        
+
+    </div>
+    </div>
+</body>
+
+</html>

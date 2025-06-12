@@ -1,0 +1,38 @@
+/* body {
+    font-family: Arial, sans-serif;
+    background-color: #f4f4f4;
+    margin: 0;
+    padding: 0;
+}
+
+.container {
+    max-width: 800px;
+    margin: 20px auto;
+    padding: 20px;
+    background: #fff;
+    border-radius: 8px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+}
+
+h1 {
+    color: #333;
+    text-align: center;
+}
+
+ul {
+    list-style-type: none; /* Removes the default bullet points */
+    padding: 0; /* Removes default padding */
+}
+
+li {
+    padding: 10px;
+    border-bottom: 1px solid #ddd; /* Adds a bottom border for separation */
+}
+
+li:last-child {
+    border-bottom: none; /* Removes the border from the last item */
+}
+
+li:hover {
+    background-color: #f1f1f1; /* Changes background on hover */
+} */

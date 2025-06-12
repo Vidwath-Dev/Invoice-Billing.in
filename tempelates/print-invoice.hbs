@@ -1,0 +1,219 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Invoice - {{invoice.invoiceNumber}}</title>
+    <link rel="stylesheet" href="/css/print-invoice.css"> <!-- Include your CSS for styling -->
+    <style>
+        /* Global styles */
+        body {
+            background: linear-gradient(145deg, #007bff, #0056b3);
+            color: #fff;
+            font-family: 'Arial', sans-serif;
+            margin: 0;
+            padding: 0;
+        }
+
+        /* Container styling */
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            background: #fff;
+            color: #333;
+            border-radius: 10px;
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
+        }
+
+        h1,
+        h2,
+        h3 {
+            color: #333;
+            font-weight: bold;
+        }
+
+        h1 {
+            font-size: 2.5rem;
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        p {
+            font-size: 1rem;
+            margin-bottom: 10px;
+        }
+
+        ul {
+            list-style: none;
+            padding: 0;
+        }
+
+        li {
+            padding: 8px 0;
+            border-bottom: 1px solid #f1f1f1;
+            font-size: 1rem;
+            line-height: 1.5;
+        }
+
+        li:last-child {
+            border-bottom: none;
+        }
+
+        .btn {
+            display: inline-block;
+            background-color: #db3434;
+            padding: 10px 20px;
+            font-size: 1rem;
+            font-weight: bold;
+            text-decoration: none;
+            color: #fff;
+            border-radius: 5px;
+            margin-top: 20px;
+            transition: background-color 0.3s ease;
+        }
+
+        .btn:hover {
+            background-color: #2980b9;
+        }
+
+        .btn-print {
+            background-color: #2ecc71;
+            margin-top: 30px;
+            display: block;
+            font-size: 1.2rem;
+        }
+
+        .btn-print:hover {
+            background-color: #27ae60;
+        }
+
+        /* Print-specific styles */
+        @media print {
+            body {
+                -webkit-print-color-adjust: exact;
+            }
+
+            .container {
+                box-shadow: none;
+                padding: 10px;
+                background: none;
+            }
+
+            h1,
+            h2,
+            h3,
+            p,
+            li {
+                color: black;
+            }
+
+            .btn,
+            .btn-print {
+                display: none;
+            }
+
+            ul {
+                padding-left: 20px;
+            }
+
+            li {
+                padding-left: 10px;
+            }
+        }
+
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            .container {
+                padding: 15px;
+            }
+
+            h1 {
+                font-size: 2rem;
+            }
+
+            .btn,
+            .btn-print {
+                font-size: 1rem;
+                padding: 8px 16px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <h1>Invoice Number: {{invoice._id}}</h1>
+        <p><strong>Date:</strong> {{invoice.createdAt}}</p>
+        <p><strong>Email:</strong> {{invoice.userEmail}}</p>
+        <h2>Items:</h2>
+        <ul>
+            {{#each invoice.items}}
+            <li>
+                {{this.description}} - Quantity: {{this.quantity}} - Price: {{this.price}}Rs
+            </li>
+            {{/each}}
+        </ul>
+        <h3>Total Amount: {{invoice.totalAmount}} Rs</h3>
+    </div>
+    <div class="side">
+        <div style="margin-bottom:50px;width:400px;margin-left:300px" class="container">
+            <h2 style="text-align: center;">Send Invoice to Customer</h2>
+            <input style="text-align: center;margin-left:110px" type="email" id="customerEmail" placeholder="Enter customer email" required>
+        </div>
+        <div style="width:200px;margin-right:300px;" class="container">
+            <button id="sendInvoiceButton">Send Invoice</button>
+            <button onclick="window.print()">Print Invoice</button>
+
+            <script>
+                document.getElementById('sendInvoiceButton').addEventListener('click', async () => {
+                    const email = document.getElementById('customerEmail').value;
+                    const invoiceId = "{{invoice._id}}"; // Get the invoice ID from the template
+
+                    if (email) {
+                        try {
+                            const response = await fetch('/send-invoice', {
+                                method: 'POST',
+                                headers: {
+                                    'Content-Type': 'application/json',
+                                },
+                                body: JSON.stringify({ email, invoiceId }),
+                            });
+
+                            if (response.ok) {
+                                alert('Invoice sent successfully!');
+                            } else {
+                                alert('Failed to send invoice.');
+                            }
+                        } catch (error) {
+                            console.error('Error sending invoice:', error);
+                            alert('Error sending invoice.');
+                        }
+                    } else {
+                        alert('Please enter a valid email address.');
+                    }
+                });
+            </script>
+
+            <div style="text-align: center; margin-top: 20px;">
+                <a href="/logout" class="btn" style="margin-top: 0px;">Logout</a>
+            </div>
+        </div>
+    </div>
+</body>
+
+</html>
+
+{{!-- <button id="printButton" class="btn btn-print">Print Invoice</button> <!-- Button to trigger print -->
+<script>
+    document.getElementById('printButton').addEventListener('click', function () {
+        const confirmation = confirm("Are you sure you want to print this invoice?");
+        if (confirmation) {
+            window.print(); // Proceed to print the invoice
+        } else {
+            // Do nothing if the user cancels
+            alert("Printing cancelled.");
+        }
+    });
+</script> --}}

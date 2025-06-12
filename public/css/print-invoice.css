@@ -1,0 +1,102 @@
+body {
+    font-family: Arial, sans-serif;
+    background-color: #f4f4f4;
+    margin: 0;
+    padding: 20px;
+}
+
+.container {
+    max-width: 800px;
+    margin: auto;
+    padding: 20px;
+    background: #fff;
+    border-radius: 8px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+}
+
+h1 {
+    color: #333;
+    text-align: center;
+}
+
+h2 {
+    color: #555;
+}
+
+h3 {
+    color: #333;
+}
+
+ul {
+    list-style-type: none; /* Removes default bullet points */
+    padding: 0; /* Removes default padding */
+}
+
+li {
+    padding: 10px;
+    border-bottom: 1px solid #ddd; /* Adds a bottom border for separation */
+}
+
+li:last-child {
+    border-bottom: none; /* Removes the border from the last item */
+}
+
+button {
+    display: block;
+    margin: 20px auto;
+    padding: 10px 15px;
+    background-color: #007bff;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 16px;
+    transition: background-color 0.3s;
+}
+
+button:hover {
+    background-color: #0056b3;
+}
+
+/* Print styles */
+@media print {
+    body {
+        margin: 0; /* Remove margins for print */
+        padding: 0; /* Remove padding for print */
+    }
+
+    .container {
+        box-shadow: none; /* Remove shadow for print */
+    }
+
+    button {
+        display: none; /* Hide print button in print view */
+    }
+
+    h1, h2, h3 {
+        page-break-after: avoid; /* Prevent page breaks after headers */
+    }
+
+    ul {
+        page-break-inside: avoid; /* Prevent page breaks inside lists */
+    }
+}
+
+.container button {
+    padding : 10px 15px;
+    color: #fff;
+    background-color: #28a745;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s;
+}
+
+.container button:hover {
+    background-color: #218838;
+}
+
+.side{
+    display: flex;
+    margin-top: 20px;
+}

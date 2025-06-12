@@ -1,0 +1,256 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="/css/shopprofile.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <title>User Dashboard</title>
+</head>
+
+<body>
+    <div class="main-background">
+        <div class="container">
+            <h1>Welcome, {{ownerName}}</h1>
+            <p>Your email: {{userEmail}}</p>
+
+        </div>
+
+        <div class="navigation">
+            {{#if session.userEmail}}
+            <a href="/home?email={{session.userEmail}}" class="btn">Home</a>
+            {{else}}
+            <a href="/register" class="btn">Login to Edit Shop Details</a>
+            {{/if}}
+            <a href="/shopabout?email={{session.userEmail}}" class="btn">About</a>
+            <a href="/shopcontact?email={{session.userEmail}}" class="btn">Contact</a>
+            <a href="/shopprofile?email={{session.userEmail}}" class="btn">Profile</a>
+            <a href="/shoptrack?email={{session.userEmail}}" class="btn">Track</a>
+        </div>
+
+        <div class="container">
+
+            <!-- Stock Alerts -->
+            {{#if alerts.length}}
+            <h2>Stock Alerts</h2>
+            <div class="alerts">
+                {{#each alerts}}
+                <div class="alert {{this.level}}">
+                    <marquee style="color: red;" behavior="scroll" direction="left" scrollamount="10">{{this.message}}</marquee>
+                </div>
+                {{/each}}
+            </div>
+            {{/if}}
+        </div>
+        <div class="sidebyside">
+            <div class="container">
+                <!-- Stock Table -->
+                <h2>Stock Information</h2>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Barcode ID</th>
+                            <th>Product Name</th>
+                            <th>Total Stock</th>
+                            <th>Stock-Out</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {{#each stockItems}}
+                        <tr>
+                            <td>{{this.barcodeId}}</td>
+                            <td>{{this.description}}</td>
+                            <td>{{this.stockIn}}</td>
+                            <td>{{this.stockOut}}</td>
+                        </tr>
+                        {{/each}}
+                    </tbody>
+                </table>
+            </div>
+
+
+
+            <div class="graph-container">
+                <canvas id="stockChart" width="400" height="200"></canvas>
+
+                <script>
+                    document.addEventListener('DOMContentLoaded', function () {
+                        const ctx = document.getElementById('stockChart').getContext('2d');
+
+                        // Helper function to safely decode and parse JSON
+                        function safeJSONParse(jsonString) {
+                            try {
+                                // First, decode any HTML entities
+                                const decoded = jsonString.replace(/&quot;/g, '"')
+                                    .replace(/&amp;/g, '&')
+                                    .replace(/&#39;/g, "'")
+                                    .replace(/&lt;/g, '<')
+                                    .replace(/&gt;/g, '>');
+
+                                // Then parse the JSON
+                                return JSON.parse(decoded);
+                            } catch (error) {
+                                console.error('Error parsing JSON:', error);
+                                console.log('Problematic JSON string:', jsonString);
+                                return []; // Return an empty array to prevent chart errors
+                            }
+                        }
+
+                        // Get the raw JSON strings and parse them
+                        const stockInData = safeJSONParse('{{json stockInData}}');
+                        const stockOutData = safeJSONParse('{{json stockOutData}}');
+                        const labels = safeJSONParse('{{json labels}}');
+
+                        // Ensure we have data before creating the chart
+                        if (stockInData.length > 0 && stockOutData.length > 0 && labels.length > 0) {
+                            new Chart(ctx, {
+                                type: 'bar',
+                                data: {
+                                    labels: labels,
+                                    datasets: [
+                                        {
+                                            label: 'Stock In',
+                                            data: stockInData,
+                                            backgroundColor: 'rgba(75, 192, 192, 0.7)',
+                                            borderColor: 'rgba(75, 192, 192, 1)',
+                                            borderWidth: 1,
+                                            borderSkipped: false,
+                                            borderRadius: 10,
+                                            barThickness: 'flex',
+                                            categoryPercentage: 0.8,
+                                            barPercentage: 0.7
+                                        },
+                                        {
+                                            label: 'Stock Out',
+                                            data: stockOutData,
+                                            backgroundColor: 'rgba(255, 99, 132, 0.7)',
+                                            borderColor: 'rgba(255, 99, 132, 1)',
+                                            borderWidth: 1,
+                                            borderSkipped: false,
+                                            borderRadius: 10,
+                                            barThickness: 'flex',
+                                            categoryPercentage: 0.8,
+                                            barPercentage: 0.7
+                                        }
+                                    ]
+                                },
+                                options: {
+                                    responsive: true,
+                                    indexAxis: 'x',
+                                    // Advanced Animation Configuration
+                                    animation: {
+                                        duration: 2000, // Total animation time in milliseconds
+                                        easing: 'easeOutBounce', // Bouncy ease-out effect
+
+                                        // Stagger animation for each dataset
+                                        delay: (context) => {
+                                            // Delay increases for each bar
+                                            return context.dataIndex * 200; // 200ms between each bar
+                                        },
+
+                                        // Custom animation effects
+                                        animations: {
+                                            y: {
+                                                from: 0, // Start from zero
+                                                to: 1, // Animate to full height
+                                                type: 'number',
+                                                delay: (context) => context.dataIndex * 200,
+                                                duration: 1500,
+                                                easing: 'easeOutQuart' // Smooth deceleration
+                                            },
+                                            x: {
+                                                type: 'number',
+                                                duration: 1000,
+                                                from: ctx.canvas.width, // Slide in from right
+                                                easing: 'easeOutCubic'
+                                            }
+                                        }
+                                    },
+
+                                    // Hover interactions
+                                    hover: {
+                                        mode: 'nearest',
+                                        intersect: true,
+                                        animationDuration: 400 // Quick hover effect
+                                    },
+
+                                    plugins: {
+                                        title: {
+                                            display: true,
+                                            text: 'Stock In vs Stock Out',
+                                            font: {
+                                                size: 16
+                                            },
+                                            animation: {
+                                                duration: 1000,
+                                                fn: function (progress) {
+                                                    // Custom title fade-in
+                                                    return Math.sin(progress * Math.PI / 2);
+                                                }
+                                            }
+                                        }
+                                    },
+
+                                    scales: {
+                                        y: {
+                                            beginAtZero: true,
+                                            title: {
+                                                display: true,
+                                                text: 'Quantity',
+                                                font: {
+                                                size: 18
+                                            }
+                                            },
+                                            grid: {
+                                                color: 'rgba(0,0,0,0.1)',
+                                                borderDash: [5, 5]
+                                            },
+                                            ticks: {
+                                                // Animated number formatting
+                                                callback: function (value, index, values) {
+                                                    return value.toLocaleString();
+                                                }
+                                            }
+                                        },
+                                        x: {
+                                            title: {
+                                                display: true,
+                                                text: 'Products',
+                                                font: {
+                                                size: 18
+                                            }
+                                            },
+                                            grid: {
+                                                display: false
+                                            }
+                                        }
+                                    }
+                                },
+                                plugins: [{
+                                    // Custom hover effect plugin
+                                    afterDraw: (chart) => {
+                                        const ctx = chart.ctx;
+                                        chart.data.datasets.forEach((dataset, datasetIndex) => {
+                                            const meta = chart.getDatasetMeta(datasetIndex);
+                                            meta.data.forEach((bar, index) => {
+                                                bar.options.hoverBackgroundColor = datasetIndex === 0
+                                                    ? 'rgba(75, 192, 192, 1)'
+                                                    : 'rgba(255, 99, 132, 1)';
+                                                bar.options.hoverBorderWidth = 3;
+                                            });
+                                        });
+                                    }
+                                }]
+                            });
+                        } else {
+                            console.error('Insufficient data to create chart');
+                        }
+                    });
+                </script>
+            </div>
+        </div>
+    </div>
+</body>
+
+</html>

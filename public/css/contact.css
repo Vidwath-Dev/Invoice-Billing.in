@@ -1,0 +1,237 @@
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+}
+
+body {
+  min-height: 100vh;
+  background: linear-gradient(45deg, #1a1a1a, #2a2a2a);
+  color: white;
+  overflow-x: hidden;
+}
+
+.container {
+  max-width: 800px;
+  margin: 0 auto;
+  padding: 2rem;
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+}
+
+.contact-form {
+  width: 100%;
+  background: rgba(255, 255, 255, 0.1);
+  padding: 3rem;
+  border-radius: 20px;
+  backdrop-filter: blur(10px);
+  transform-style: preserve-3d;
+  transition: transform 0.5s;
+}
+
+.contact-form h1 {
+  font-size: 2.5rem;
+  margin-bottom: 2rem;
+  color: #00ff88;
+}
+
+.form-group {
+  margin-bottom: 1.5rem;
+}
+
+.form-group label {
+  display: block;
+  margin-bottom: 0.5rem;
+  font-size: 1.1rem;
+}
+
+.form-group input,
+.form-group textarea {
+  width: 100%;
+  padding: 1rem;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 8px;
+  color: white;
+  font-size: 1rem;
+  transition: all 0.3s;
+}
+
+.form-group input:focus,
+.form-group textarea:focus {
+  outline: none;
+  border-color: #00ff88;
+  background: rgba(255, 255, 255, 0.1);
+}
+
+.form-group textarea {
+  min-height: 150px;
+  resize: vertical;
+}
+
+button {
+  background: #00ff88;
+  color: black;
+  border: none;
+  padding: 1rem 2rem;
+  font-size: 1.1rem;
+  border-radius: 30px;
+  cursor: pointer;
+  transition: all 0.3s;
+}
+
+button:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 5px 15px rgba(0, 255, 136, 0.3);
+}
+
+.success-message,
+.error-message {
+  padding: 1rem;
+  border-radius: 8px;
+  margin-bottom: 1rem;
+  display: none;
+}
+
+.success-message {
+  background: rgba(0, 255, 136, 0.1);
+  color: #00ff88;
+}
+
+.error-message {
+  background: rgba(255, 0, 0, 0.1);
+  color: #ff4444;
+}
+
+.loading {
+  display: none;
+  margin-left: 1rem;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+.loading::after {
+  content: '';
+  display: inline-block;
+  width: 20px;
+  height: 20px;
+  border: 2px solid #00ff88;
+  border-radius: 50%;
+  border-top-color: transparent;
+  animation: spin 1s linear infinite;
+  vertical-align: middle;
+}
+
+
+.logo {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: #fff;
+  text-decoration: none;
+}
+
+.nav-links {
+  display: flex;
+  gap: 2rem;
+}
+
+.nav-links a {
+  color: #fff;
+  text-decoration: none;
+  font-weight: 500;
+  transition: color 0.3s;
+  align-items: center;
+}
+
+.nav-links a:hover {
+  color: #64ffda;
+}
+
+.nav {
+position: center;
+top: 0;
+width: 100%;
+padding: 1.5rem 4rem;
+display: flex;
+justify-content: space-between;
+align-items: center;
+z-index: 1000;
+background: rgba(15, 15, 15, 0.8);
+backdrop-filter: blur(10px);
+justify-content: center;
+}
+.nav ul {
+display: flex;
+justify-content: center;
+gap: 2rem;
+list-style: none;
+}
+
+.nav a {
+color: white;
+text-decoration: none;
+font-size: 1.1rem;
+position: relative;
+padding: 0.5rem;
+}
+
+.nav a::after {
+content: '';
+position: absolute;
+bottom: 0;
+left: 0;
+width: 0;
+height: 2px;
+background: #00ff88;
+transition: width 0.3s;
+}
+
+.nav a:hover::after {
+width: 100%;
+}
+
+#responseMessage {
+    margin-top: 10px;
+    padding: 15px;
+    border-radius: 5px;
+    font-size: 1.1rem;
+    transition: all 0.3s ease; /* Smooth transition for hover effects */
+    display: none; /* Initially hidden */
+}
+
+/* Success message styles */
+#responseMessage.success {
+    background-color: rgba(76, 175, 80, 0.1); /* Light green background */
+    color: #4CAF50; /* Dark green text */
+    border: 1px solid #4CAF50; /* Dark green border */
+}
+
+/* Error message styles */
+#responseMessage.error {
+    background-color: rgba(244, 67, 54, 0.1); /* Light red background */
+    color: #F44336; /* Dark red text */
+    border: 1px solid #F44336; /* Dark red border */
+}
+
+/* Animation for showing the message */
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(-10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* Apply animation when the message is displayed */
+#responseMessage.show {
+    display: block; /* Show the message */
+    animation: fadeIn 0.5s ease; /* Fade-in animation */
+}

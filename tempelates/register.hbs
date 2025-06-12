@@ -1,0 +1,199 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet"
+        integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
+    <link rel="stylesheet" href="/css/register.css">
+    <title>Document</title>
+    <script>
+        function switchTab(tab) {
+            const loginForm = document.getElementById('loginForm');
+            const signupForm = document.getElementById('signupForm');
+            const tabs = document.querySelectorAll('.tab');
+
+            if (tab === 'login') {
+                loginForm.style.display = 'block';
+                signupForm.style.display = 'none';
+                tabs[0].classList.add('active');
+                tabs[1].classList.remove('active');
+            } else {
+                loginForm.style.display = 'none';
+                signupForm.style.display = 'block';
+                tabs[0].classList.remove('active');
+                tabs[1].classList.add('active');
+            }
+        }
+
+        async function handleLogin(event) {
+            event.preventDefault();
+
+            const email = document.getElementById('loginEmail').value;
+            const password = document.getElementById('loginPassword').value;
+            const errorElement = document.getElementById('loginError');
+
+            try {
+                const response = await fetch('/api/login', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ email, password })
+                });
+
+                const data = await response.json();
+
+                if (response.ok) {
+                    window.location.href = '/dashboard'; // Redirect to dashboard
+                } else {
+                    errorElement.textContent = data.error;
+                    errorElement.style.display = 'block';
+                }
+            } catch (error) {
+                errorElement.textContent = 'An error occurred. Please try again.';
+                errorElement.style.display = 'block';
+            }
+        }
+
+        async function handleSignup(event) {
+            event.preventDefault();
+
+            const name = document.getElementById('signupName').value;
+            const email = document.getElementById('signupEmail').value;
+            const password = document.getElementById('signupPassword').value;
+            const confirmPassword = document.getElementById('confirmPassword').value;
+            const errorElement = document.getElementById('signupError');
+
+            if (password !== confirmPassword) {
+                errorElement.textContent = 'Passwords do not match';
+                errorElement.style.display = 'block';
+                return;
+            }
+
+            try {
+                const response = await fetch('/api/signup', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ name, email, password })
+                });
+
+                const data = await response.json();
+
+                if (response.ok) {
+                    window.location.href = '/dashboard'; // Redirect to dashboard
+                } else {
+                    errorElement.textContent = data.error;
+                    errorElement.style.display = 'block';
+                }
+            } catch (error) {
+                errorElement.textContent = 'An error occurred. Please try again.';
+                errorElement.style.display = 'block';
+            }
+        }
+    </script>
+
+</head>
+
+<body>
+    <nav class="nav">
+        <div class="nav-links">
+            <a href="/">Home</a>
+            <a href="/latest">Latest</a>
+            <a href="/about">About</a>
+            <a href="/contact">Contact</a>
+            <a href="/register">Register</a>
+        </div>
+    </nav>
+
+    <div class="container">
+        <div class="logo">
+            <i class="fas fa-user-circle"></i>
+            <h1>Welcome Back</h1>
+            <p>Enter your credentials to access your account</p>
+        </div>
+
+        <div class="tabs">
+            <div class="tab active" onclick="switchTab('login')">Login</div>
+            <div class="tab" onclick="switchTab('signup')">Sign Up</div>
+        </div>
+
+        <form action="/login" method="post" id="loginForm">
+            <div class="form-group">
+                <i class="fas fa-envelope"></i>
+                <input type="email" name="email" placeholder="Enter your email" required>
+            </div>
+            <div class="form-group">
+                <i class="fas fa-lock"></i>
+                <input type="password" name="password" placeholder="Enter your password" required>
+            </div>
+            <button type="submit">Login</button>
+
+            <div class="error-message" id="loginError"></div>
+            <!-- Forgot Password Button -->
+            <style>
+                .forgot-password-btn {
+                    color: #007BFF;
+                    /* Change text color */
+                    text-decoration: none;
+                    /* Remove underline */
+                    font-weight: bold;
+                    /* Make text bold */
+                    padding: 10px;
+                    /* Add padding */
+                    border: 1px solid #007BFF;
+                    /* Add border */
+                    border-radius: 5px;
+                    /* Round the corners */
+                    transition: background-color 0.3s;
+                    /* Smooth transition for background color */
+                }
+
+                .forgot-password-btn:hover {
+                    background-color: #007BFF;
+                    /* Change background color on hover */
+                    color: white;
+                    /* Change text color on hover */
+                }
+            </style>
+
+            <div style="margin-top: 20px;">
+                <a href="/forgot-password" class="forgot-password-btn">Forgot Password?</a>
+            </div>
+        </form>
+
+        <form action="/signup" method="post" id="signupForm" style="display: none;">
+            <div class="form-group">
+                <i class="fas fa-user"></i>
+                <input type="text" placeholder="Enter your full name" name="name" required>
+            </div>
+            <div class="form-group">
+                <i class="fas fa-envelope"></i>
+                <input type="email" placeholder="Enter your email" name="email" required>
+            </div>
+            <div class="form-group">
+                <i class="fas fa-lock"></i>
+                <input type="password" placeholder="Create a password" name="password" required>
+            </div>
+            <div class="form-group">
+                <i class="fas fa-lock"></i>
+                <input type="password" placeholder="Confirm your password" name="confirmPassword" required>
+            </div>
+            <button type="submit">Create Account</button>
+            <div class="error-message" id="signupError"></div>
+        </form>
+
+        {{#if message}}
+        <h4 class="alert alert-danger mt-4">{{message}}</h4>
+        {{/if}}
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"
+        integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz"
+        crossorigin="anonymous"></script>
+</body>
+
+</html>
